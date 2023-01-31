@@ -34,7 +34,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) =>{
     }
     
     return (
-        <contractContext.Provider value = {{addContract}}>
+        <contractContext.Provider value = {{addContract, getContract}}>
             { children }
         </contractContext.Provider>
     )

@@ -54,7 +54,7 @@ const UserDocuments = () => {
         console.log(metadata);
         const sha256 = await blobToSHA256(uplodedDocument)
         const currentTime = new Date()
-        //addContract(category, description, name, email, currentTime.toLocaleString(), sha256, "metadata")
+        addContract(category, description, name, email, currentTime.toLocaleString(), sha256, "metadata")
       //upload details to Blockchain
     }     
     } catch (error) {

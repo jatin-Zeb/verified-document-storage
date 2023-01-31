@@ -10,7 +10,7 @@ import * as styles from "./styles";
 import { NFT_TOKEN } from "../../../constants/constants";
 import { blobToSHA256 } from "file-to-sha256";
 import { MoreOutlined } from "@ant-design/icons";
-import { ContractContextType } from "../../../context";
+import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 
 const UserDocuments = () => {
@@ -52,14 +52,18 @@ const UserDocuments = () => {
         console.log(metadata);
         const sha256 = await blobToSHA256(uplodedDocument);
         const currentTime = new Date();
+        //@TODO should get values from the form (remove hardcoded strings)
         addContract(
-          values.category,
+          values.category || "category",
+          "type",
           description,
-          name,
-          values.email,
+          name || "name",
+          values.email || "email",
+          "start_date",
+          "end_date",
           currentTime.toLocaleString(),
           sha256,
-          "metadata"
+          "metadata",
         );
         //upload details to Blockchain
       }

@@ -9,7 +9,7 @@ import { NFTStorage, File } from "nft.storage";
 import * as styles from "./styles";
 import { NFT_TOKEN } from "../../../constants/constants";
 import { blobToSHA256 }  from 'file-to-sha256'
-import { ContractContextType } from '../../../context';
+import { ContractContextType } from './../Contract/context';
 import { contractContext } from './../Contract'
 
 const UserDocuments = () => {
@@ -54,7 +54,7 @@ const UserDocuments = () => {
         console.log(metadata);
         const sha256 = await blobToSHA256(uplodedDocument)
         const currentTime = new Date()
-        addContract(category, description, name, email, currentTime.toLocaleString(), sha256, "metadata")
+        addContract(category, type, description, name, email, startDate.toLocaleString(), endDate.toLocaleString(), currentTime.toLocaleString(), sha256, "metadata")
       //upload details to Blockchain
     }     
     } catch (error) {

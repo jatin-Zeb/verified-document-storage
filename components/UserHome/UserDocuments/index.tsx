@@ -8,6 +8,8 @@ import Button from "../../shared/Button";
 import { NFTStorage, File } from "nft.storage";
 import * as styles from "./styles";
 import { NFT_TOKEN } from "../../../constants/constants";
+import { blobToSHA256 } from "file-to-sha256";
+
 import { MoreOutlined } from "@ant-design/icons";
 
 const UserDocuments = () => {
@@ -19,14 +21,14 @@ const UserDocuments = () => {
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);
-    uploadDocToIPFS();
+    uploadDocToIPFS(values);
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
 
-  const uploadDocToIPFS = async () => {
+  const uploadDocToIPFS = async (values: any) => {
     try {
       console.log("NFT TOKEN IS:");
       console.log(NFT_TOKEN);
@@ -45,7 +47,17 @@ const UserDocuments = () => {
           }),
         });
         console.log(metadata);
-
+        const sha256 = await blobToSHA256(uplodedDocument);
+        const currentTime = new Date();
+        addContract(
+          values.category,
+          description,
+          name,
+          values.email,
+          currentTime.toLocaleString(),
+          sha256,
+          "metadata"
+        );
         //upload details to Blockchain
       }
     } catch (error) {
@@ -286,3 +298,14 @@ const UserDocuments = () => {
 };
 
 export default UserDocuments;
+function addContract(
+  category: any,
+  description: string,
+  name: string,
+  email: any,
+  arg4: string,
+  sha256: string,
+  arg6: string
+) {
+  throw new Error("Function not implemented.");
+}

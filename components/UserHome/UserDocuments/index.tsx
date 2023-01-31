@@ -20,7 +20,8 @@ const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
 
-  const { addContract } = useContext(contractContext) as ContractContextType;
+  const { addContract, fetchWalletInfo } = useContext(contractContext) as ContractContextType;
+  fetchWalletInfo()
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);

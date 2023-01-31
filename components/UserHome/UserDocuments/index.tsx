@@ -2,15 +2,16 @@
 import { Badge, Tab, Table, TabList, Upload } from "@web3uikit/core";
 import { Drawer, Form, Input, DatePicker, Tabs } from "antd";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { colors, mixins, typography } from "../../../styles1";
 import Button from "../../shared/Button";
 import { NFTStorage, File } from "nft.storage";
 import * as styles from "./styles";
 import { NFT_TOKEN } from "../../../constants/constants";
 import { blobToSHA256 } from "file-to-sha256";
-
 import { MoreOutlined } from "@ant-design/icons";
+import { ContractContextType } from "../../../context";
+import { contractContext } from "./../Contract";
 
 const UserDocuments = () => {
   const [name, setName] = useState<string>("");
@@ -18,6 +19,8 @@ const UserDocuments = () => {
 
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
+
+  const { addContract } = useContext(contractContext) as ContractContextType;
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);

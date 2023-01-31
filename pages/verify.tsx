@@ -9,26 +9,7 @@ import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import UserProfile from "../components/UserProfile";
 
-const fileList: UploadFile[] = [
-    {
-      uid: '0',
-      name: 'xxx.png',
-      status: 'uploading',
-      percent: 33,
-    },
-    {
-      uid: '-1',
-      name: 'yyy.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-2',
-      name: 'zzz.png',
-      status: 'error',
-    },
-  ];
+
 const Verify: NextPage = () => {
   const [openSideDrawer, setOpenSideDrawer] = useState<boolean>(false);
     const [uploadedFile,setUploadedFIle] =useState<UploadFile[]>();

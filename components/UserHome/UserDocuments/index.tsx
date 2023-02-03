@@ -10,7 +10,7 @@ import * as styles from "./styles";
 import { NFT_TOKEN } from "../../../constants/constants";
 import { blobToSHA256 } from "file-to-sha256";
 import { MoreOutlined } from "@ant-design/icons";
-import { ContractContextType } from "../../../context";
+import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 
 const UserDocuments = () => {
@@ -20,10 +20,11 @@ const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
 
-  const { addContract } = useContext(contractContext) as ContractContextType;
+  const { addContract, fetchWalletInfo } = useContext(contractContext) as ContractContextType;
+  fetchWalletInfo()
+
   const onFinish = (values: any) => {
-    console.log(values);
-    console.log("Success:", values);
+    console.log("Details Submitted For Upload:", values);
     uploadDocToIPFS(values);
   };
 
@@ -31,17 +32,22 @@ const UserDocuments = () => {
     console.log("Failed:", errorInfo);
   };
 
+  async function getImageUrlFromMetaData(IPFSUri: string) {
+    IPFSUri = IPFSUri.replace("ipfs://", "https://w3s.link/ipfs/");
+    const response =  await fetch(IPFSUri)
+    const responseJSON = await response.json()
+    return responseJSON["image"]
+  }
+
   const uploadDocToIPFS = async (values: any) => {
     try {
-      console.log("NFT TOKEN IS:");
-      console.log(NFT_TOKEN);
+      console.log("NFT TOKEN IS:",NFT_TOKEN);
       if (NFT_TOKEN) {
-        console.log(NFT_TOKEN);
         const client = new NFTStorage({
           token: NFT_TOKEN,
         });
-        console.log("Hi I am here");
-        console.log(client);
+        console.log("NFT Storage Client:=>",client);
+
         const metadata = await client.store({
           name: name,
           description: description,
@@ -49,19 +55,25 @@ const UserDocuments = () => {
             type: uplodedDocument.type,
           }),
         });
-        console.log(metadata);
+
+        console.log("MetaData :=> ",metadata);
         const sha256 = await blobToSHA256(uplodedDocument);
+        console.log("SHA256 of File :=> ",sha256)
         const currentTime = new Date();
+        const imageUrl = await getImageUrlFromMetaData(metadata.url)
         addContract(
-          values.category,
-          description,
-          name,
-          values.email,
+          values.Category || "",
+          values.Type || "",
+          values.Description || "",
+          values.Name || "",
+          values.Email || "",
+          (values.DateRange[0]['$d']).toLocaleString() || "",
+          (values.DateRange[1]['$d']).toLocaleString() || "",
           currentTime.toLocaleString(),
           sha256,
-          "metadata"
+          imageUrl,
         );
-        //upload details to Blockchain
+
       }
     } catch (error) {
       console.error(error);

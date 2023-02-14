@@ -13,3 +13,15 @@ export const setUserAddress = (address: string) => {
     }
   );
 }
+
+export const setIsLoggedIn = (state: boolean) => {
+  actionCreator(
+    "setIsLoggedIn",
+    async (dispatch: Dispatch): Promise<void> => {
+      dispatch({
+        type: ActionType.SET_LOGIN,
+        payload: state
+      });
+    }
+  );
+}

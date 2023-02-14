@@ -1,3 +1,5 @@
+import { Document } from "../../../typings/docs";
+
 export type ContractContextType = {
   addContract: (
     category: string,
@@ -12,6 +14,6 @@ export type ContractContextType = {
     IPFSUri: string
   ) => {};
   getContract: (IPFSUri: string) => any;
-  getUserContracts: () => {};
-  fetchWalletInfo: () => {};
+  getUserContracts: () => Promise<Document[]>;
+  fetchWalletInfo: () => Promise<boolean>;
 };

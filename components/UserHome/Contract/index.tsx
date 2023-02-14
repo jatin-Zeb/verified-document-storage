@@ -2,6 +2,7 @@ import { abi, contractAddress } from "./../../../constants";
 import { useEffect, useState, createContext } from "react";
 import { ethers } from "ethers";
 import { ContractContextType } from "./context";
+import { Document } from "../../../typings/docs";
 export const contractContext = createContext<ContractContextType | null>(null);
 interface Props {
   children: React.ReactNode;
@@ -84,14 +85,14 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         userAddress
       );
 
-      var result = [];
+      var result:Document[] = [];
       for (var i = 0; i < contractCounts; i++) {
-        const res = await contract.getContractbyCreator(userAddress, i);
+        const res: Document = await contract.getContractbyCreator(userAddress, i);
         result.push(res);
       }
       return result;
     } else {
-      console.log("wallet not connnected");
+      return [];
     }
   }
 

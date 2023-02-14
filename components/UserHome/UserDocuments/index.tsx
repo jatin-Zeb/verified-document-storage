@@ -11,7 +11,6 @@ import {
   Typography,
   message,
 } from "antd";
-import { toast } from "react-toastify";
 import { useEffect, useState, useContext, useCallback } from "react";
 import { colors, mixins, typography } from "../../../styles1";
 import { NFTStorage, File } from "nft.storage";
@@ -22,13 +21,17 @@ import { MoreOutlined, UploadOutlined } from "@ant-design/icons";
 import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 import Button from "../../shared/Button";
+import { setUserDocs } from "../../../actions/docs";
+import { useSelector } from "react-redux";
+import { StoreState } from "../../../reducers";
+import { Document } from "../../../typings/docs";
 
 const UserDocuments = () => {
   const [connected, setConnected] = useState<boolean>(false); // to be made into global state
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
-  const [userDocuments, setUserUploadedDocuments] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
+  const documents = useSelector<StoreState, Document[]>(state => state.docs.uploadedDocs);
   const { addContract, getUserContracts, fetchWalletInfo } = useContext(
     contractContext
   ) as ContractContextType;
@@ -36,7 +39,7 @@ const UserDocuments = () => {
 
   const connectToWallet = async () => {
     const isConnected = await fetchWalletInfo();
-    setConnected(isConnected as boolean);
+    setConnected(isConnected);
   };
   useEffect(() => {
     connectToWallet();
@@ -44,7 +47,7 @@ const UserDocuments = () => {
 
   const contactHandler = useCallback(async () => {
     const contracts = await getUserContracts();
-    setUserUploadedDocuments(contracts);
+    setUserDocs(contracts);
   }, [getUserContracts]);
 
   useEffect(() => {
@@ -53,36 +56,9 @@ const UserDocuments = () => {
     }
   }, [connected, contactHandler]);
 
-  // useEffect(() => {
-  //   // fetchWalletInfo();
-  //   //
-  // });
-  // useEffect(() => {
-  //   const updateData = async () => {
-  //     const userContract = getUserContracts();
-  //     setUserUploadedDocuments(userContract);
-  //   };
-  //   // updateData();
-  // });
-  // const loadMyDocuments = async () => {
-  //   const userContracts = await getUserContracts();
-  //   console.log("User Contracts are :=> ");
-  //   console.log(userContracts);
-
-  //   console.log("User Documents here are: => ");
-  //   console.log(userDocuments);
-
-  //   setUserUploadedDocuments(userContracts);
-  // };
-
-  // useEffect(() => {
-  //   console.log("User Documents now are: => ");
-  //   console.log(userDocuments);
-  // }, [userDocuments]);
-
   const populateUseDocuments = () => {
-    if (!userDocuments) return [[]];
-    const data = userDocuments.map((document: any, idx: any) => {
+    if (!documents.length) return [[]];
+    const data = documents.map((document: Document, idx: number) => {
       return [
         <div key={1}>{idx + 1}</div>,
         <p key={2}>{document.Type}</p>,
@@ -100,7 +76,6 @@ const UserDocuments = () => {
         </div>,
       ];
     });
-    console.log(data);
 
     return data;
   };
@@ -182,9 +157,6 @@ const UserDocuments = () => {
   //   return e?.fileList;
   // };
 
-  useEffect(() => {
-    console.log(userDocuments);
-  }, [userDocuments]);
   return (
     <div css={styles.userDocuments}>
       {contextHolder}
@@ -224,7 +196,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={userDocuments ? populateUseDocuments() : []}
+                data={documents ? populateUseDocuments() : []}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}

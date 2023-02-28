@@ -5,6 +5,7 @@ import Webcam from "react-webcam";
 import Image from "next/image";
 import Button from "../../shared/Button";
 import camera from "../../../public/icons/camera 1.png";
+import CaptureFromWebCam from "./CaptureFromWebCam";
 
 const videoConstraints = {
   width: 220,
@@ -22,33 +23,31 @@ interface AddSelfieProps {
 
 const AddSelfie: React.FC<AddSelfieProps> = ({step, setStep, selfie, setSelfie, onSubmit}) => {
   const [allowed, setAllowed] = useState(false);
-  const webcamRef = useRef(null);
+  const [files, setFiles] = useState<Blob[]>([]);
+  const webcamRef = useRef<Webcam>(null);
   const capture = useCallback(
     () => {
       if (webcamRef.current) {
         // @ts-ignore
         const imageSrc = webcamRef?.current?.getScreenshot();
-        setSelfie(imageSrc);
+        setSelfie(imageSrc || "");
       }
     },
 
-    [webcamRef]
+    [setSelfie]
   );
-  if (selfie.length) {
-    const stopCamera = async () => {
-      await navigator.mediaDevices.getUserMedia({ video: false }).then((value) => {
-       value.getVideoTracks()[0].stop();
-    });
-    }
-    stopCamera();
-  }
 
   useEffect(() => {
     if (selfie.length) {
       setAllowed(false);
     }
   }, [selfie])
-
+  useEffect(() => {
+    if (files.length) {
+      const imgUrl = URL.createObjectURL(new File([files[0]], "selfie"))
+      setSelfie(imgUrl);
+    }
+  }, [files, setSelfie])
 
   return <div>
     <div css={styles.heading}>Upload Selfie</div>
@@ -57,38 +56,22 @@ const AddSelfie: React.FC<AddSelfieProps> = ({step, setStep, selfie, setSelfie, 
         <div>
           {allowed ?
             <div css={styles.cameraContainer}>
-              <Webcam
-                audio={false}
-                height={200}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                width={220}
-                videoConstraints={videoConstraints}
+              <CaptureFromWebCam
+                enumerateDevices={navigator?.mediaDevices?.enumerateDevices}
+                setSelfie={setSelfie}
+                selfieData={files}
+                loading={false}
+                webcamRef={webcamRef}
               />
               <div>
                 <Button type="blue"
                   onClick={async() => {
                     capture();
-                    try {
-                      await navigator.mediaDevices.getUserMedia({ video: false }).then((value) => {
-                      setAllowed(true);
-                        value.getVideoTracks()[0].stop();
-                    });
-                    } catch (e) {
-                      console.log(e);
-                    }
                   }}>
                   Capture</Button>
               </div>
             </div> : <div css={styles.allowContainer} onClick={async () => {
-              try {
-                await navigator.mediaDevices.getUserMedia({ video: true }).then((value) => {
-                  setAllowed(true);
-                  console.log(value);
-                });
-              } catch (e) {
-                console.log(e);
-              }
+                setAllowed(true); 
             }}>
               <div css={styles.cameraText}>
                 <Image src={camera} alt="" />
@@ -97,7 +80,7 @@ const AddSelfie: React.FC<AddSelfieProps> = ({step, setStep, selfie, setSelfie, 
             </div>}
           </div>
         : <div css={styles.selfieContainer}>
-          <Image width={220} height={200} src={selfie} alt="" />
+          <Image width={266} height={200} src={selfie} alt="" />
           <div>
             <Button type="primary" onClick={() => setSelfie("")}>Reset</Button>
           </div>

@@ -40,11 +40,15 @@ const KycHome: React.FC = () => {
   const [kycPage, setKycPage] = useState<KycPage>(KycPage.KycForm);
   const [step, setStep] = useState<number>(0);
   const [selfie, setSelfie] = useState("");
+  const [connected, setConnected] = useState<boolean>(false);
   const description = "This is a description.";
+  const [loading, setLoading] = useState(false);
+
   const [aadhar, setAadhar] = useState<Aadhar>({ front: {} as FileList, back: {} as FileList });
-    const { addUserKycInfo, getUserKycInfo } = useContext(
+    const { addUserKycInfo, getUserKycInfo, fetchWalletInfo } = useContext(
     contractContext
-  ) as ContractContextType;
+    ) as ContractContextType;
+  const [kycData, setKycData] = useState<any>();
   const [kycDetails, setKycDetails] = useState<KycDetails>({
     firstName: "",
     lastName: "",
@@ -54,6 +58,30 @@ const KycHome: React.FC = () => {
     selfieURL: "",
     createDate: ""
   });
+
+  const connectToWallet = async () => {
+    const isConnected = await fetchWalletInfo();
+    setConnected(isConnected as boolean);
+  };
+  useEffect(() => {
+    connectToWallet();
+  });
+
+  const contactHandler = useCallback(async () => {
+    const data = await getUserKycInfo();
+    setKycData(data);
+    if (data) {
+      setLoading(false);
+    }
+  }, [getUserKycInfo]);
+  console.log(kycData);
+
+  useEffect(() => {
+    if (connected) {
+      contactHandler();
+    }
+  }, [connected, contactHandler]);
+
 
   const onFormSubmit = (values: any) => {
     console.log(values);
@@ -88,6 +116,13 @@ const KycHome: React.FC = () => {
     setStep(step ? step - 1 : 0);
   }
 
+  const initialValues = {
+    firstName: kycDetails.firstName,
+      lastName: kycDetails.lastName,
+      gender: kycDetails.gender,
+      aadhaarNumber: kycDetails.aadhaarNumber
+  }
+
   const stepperContent = useCallback(() => {
     switch (step) {
       case 0:
@@ -101,7 +136,7 @@ const KycHome: React.FC = () => {
             </Typography.Title>
             <Form
               name="basic"
-              initialValues={{ remember: true }}
+              initialValues={initialValues}
               onFinish={onFormSubmit}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
@@ -183,6 +218,13 @@ const KycHome: React.FC = () => {
   }, [step, aadhar, selfie]);
   return (
     <div css={styles.addKyc}>
+      {kycData&&kycData["FirstName"].length ? <div>
+        First Name: {kycData["FirstName"]}<br/>
+        Last Name: {kycData["LastName"]}<br/>
+        D.O.B: {kycData["DOB"]}<br/>
+        Aadhaar No.: {kycData["AadhaarNumber"]}
+      </div> :
+        <div>
       <Typography.Title level={4}>Add KYC</Typography.Title>
       <Steps
         css={{ width: "100%" }}
@@ -202,7 +244,9 @@ const KycHome: React.FC = () => {
           },
         ]}
       />
-      <div css={{ marginTop: "20px" }}>{stepperContent()}</div>
+          <div css={{ marginTop: "20px" }}>{stepperContent()}</div>
+          </div>
+      }
     </div>
   );
 };

@@ -41,10 +41,6 @@ export const selfieContainer = css({
   alignItems: "center"
 })
 
-export const actionsContainer = css({
-
-})
-
 export const buttonContainer = css({
   display: "flex",
   justifyContent: "center",

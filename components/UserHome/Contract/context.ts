@@ -13,7 +13,19 @@ export type ContractContextType = {
     sha256: string,
     IPFSUri: string
   ) => {};
+  addUserKycInfo: (
+    firstName: string,
+    lastName: string,
+    gender: string,
+    dob: string,
+    aadhaarNumber: string,
+    aadhaarFrontURL: string,
+    aadhaarBackURL: string,
+    selfieURL: string,
+    createDate: string
+  )=>{};
   getContract: (IPFSUri: string) => any;
   getUserContracts: () => Promise<Document[]>;
   fetchWalletInfo: () => Promise<boolean>;
+  getUserKycInfo: () => {};
 };

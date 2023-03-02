@@ -9,25 +9,39 @@ import {
   Select,
   Typography,
 } from "antd";
+import { useCallback, useContext } from "react";
 
 import { useEffect, useState } from "react";
 import { colors, mixins, typography } from "../../../styles1";
 import KycHome from "../../Kyc";
 import Referral from "../../Referral";
 import Button from "../../shared/Button";
+import { contractContext } from "../../UserHome/Contract";
+import { ContractContextType } from "../../UserHome/Contract/context";
 import * as styles from "./styles";
 
 const UserDetails = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("1");
   const [openFinanceDrawer, setOpenFinanceDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<
     Blob | null | undefined
   >();
+  const [kycVerified, setKycVerified] = useState<boolean>(false);
+  const { getUserKycInfo } = useContext(contractContext) as ContractContextType;
+  const [kycData, setKycData] = useState<any>({
+    FirstName: "- ",
+    LastName: " -",
+    DOB: "-",
+    AadhaarNumber: "-",
+  });
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);
   };
-
+  useEffect(() => {
+    console.log(kycData);
+  }, [kycData]);
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -39,6 +53,14 @@ const UserDetails = () => {
     }
     return e?.fileList;
   };
+
+  useEffect(() => {
+    (async () => {
+      const data: { [key: string]: number } = await getUserKycInfo();
+      setKycVerified(!!(data && data["AadhaarNumber"]));
+      if (data && data["AadhaarNumber"]) setKycData(data);
+    })();
+  }, [getUserKycInfo]);
   useEffect(() => {
     console.log(uplodedDocument);
   }, [uplodedDocument]);
@@ -56,73 +78,91 @@ const UserDetails = () => {
             key: "1",
             label: `PROFILE`,
             children: (
-              <div css={styles.tab1Container}>
-                <div css={styles.personal}>
-                  <div css={styles.header}>
-                    <div css={styles.header}>PERSONAL DETAILS</div>
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        setOpenDrawer(true);
-                      }}
-                      style={{ borderRadius: "8px" }}
-                    >
-                      Edit
-                    </Button>
+              <div>
+                {!kycVerified && (
+                  <div
+                    css={styles.uploadKyc}
+                    onClick={() => {
+                      console.log(" i m run");
+                      setActiveTab("2");
+                    }}
+                  >
+                    Please Verify Your Kyc . To fill some of the details
                   </div>
-                  <div css={styles.component}>
-                    <div style={{ flex: 1.2 }}>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Name</div>
-                        <div css={styles.infoSubHead}>John</div>
+                )}
+                <div css={styles.tab1Container}>
+                  <div css={styles.personal}>
+                    <div css={styles.header}>
+                      <div css={styles.header}>PERSONAL DETAILS</div>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          setOpenDrawer(true);
+                        }}
+                        style={{ borderRadius: "8px" }}
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                    <div css={styles.component}>
+                      <div style={{ flex: 1.2 }}>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>First Name</div>
+                          <div css={styles.infoSubHead}>
+                            {kycData["FirstName"]}
+                          </div>
+                        </div>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Email</div>
+                          <div css={styles.infoSubHead}>JohnDoe@gmail.com</div>
+                        </div>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Address</div>
+                          <div css={styles.infoSubHead}>fedfwejdujkned</div>
+                        </div>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Political Affiliation</div>
+                          <div css={styles.infoSubHead}>Yes</div>
+                        </div>
                       </div>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Email</div>
-                        <div css={styles.infoSubHead}>JohnDoe@gmail.com</div>
-                      </div>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Address</div>
-                        <div css={styles.infoSubHead}>fedfwejdujkned</div>
-                      </div>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Political Affiliation</div>
-                        <div css={styles.infoSubHead}>Yes</div>
+                      <div style={{ flex: 1 }}>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Last Name</div>
+                          <div css={styles.infoSubHead}>
+                            {" "}
+                            {kycData["LastName"]}
+                          </div>
+                        </div>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Contact</div>
+                          <div css={styles.infoSubHead}>+91-9876543210</div>
+                        </div>
                       </div>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Last Name</div>
-                        <div css={styles.infoSubHead}>Doe</div>
-                      </div>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Contact</div>
-                        <div css={styles.infoSubHead}>+91-9876543210</div>
-                      </div>
+                  </div>
+                  <div css={styles.financial}>
+                    <div css={styles.header}>
+                      <div css={styles.header}>FINANCIAL DETAILS</div>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          setOpenFinanceDrawer(true);
+                        }}
+                        style={{ borderRadius: "8px" }}
+                      >
+                        Edit
+                      </Button>
                     </div>
-                  </div>
-                </div>
-                <div css={styles.financial}>
-                  <div css={styles.header}>
-                    <div css={styles.header}>FINANCIAL DETAILS</div>
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        setOpenFinanceDrawer(true);
-                      }}
-                      style={{ borderRadius: "8px" }}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                  <div css={styles.component}>
-                    <div style={{ flex: 1.2 }}>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Occupation</div>
-                        <div css={styles.infoSubHead}>John Doe</div>
-                      </div>
-                      <div css={styles.info}>
-                        <div css={styles.infoHead}>Source of Income</div>
-                        <div css={styles.infoSubHead}>JohnDoe@gmail.com</div>
+                    <div css={styles.component}>
+                      <div style={{ flex: 1.2 }}>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Occupation</div>
+                          <div css={styles.infoSubHead}>-</div>
+                        </div>
+                        <div css={styles.info}>
+                          <div css={styles.infoHead}>Source of Income</div>
+                          <div css={styles.infoSubHead}>-</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -134,6 +174,7 @@ const UserDetails = () => {
             key: "2",
             label: `REFERRAL`,
             children: <Referral />,
+            disabled: !kycVerified,
           },
           {
             key: "3",
@@ -144,9 +185,12 @@ const UserDetails = () => {
             key: "4",
             label: `SAVED ADDRESSES`,
             children: `Content of Tab Pane 1`,
+            disabled: !kycVerified,
           },
         ]}
-        onChange={() => {}}
+        onChange={(activeKey) => {
+          setActiveTab(activeKey);
+        }}
       />
 
       <Drawer

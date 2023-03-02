@@ -1,20 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import * as styles from "./styles";
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-  DatePicker,
-  Form,
-  Input,
-  Select,
-  Steps,
-  Typography,
-} from "antd";
+import { DatePicker, Form, Input, Select, Steps, Typography } from "antd";
 import Button from "../shared/Button";
 import { colors, mixins } from "../../styles1";
 import UploadAadhar from "./UploadAadhar";
 import AddSelfie from "./AddSelfie";
 import { ContractContextType } from "./../UserHome/Contract/context";
 import { contractContext } from "./../UserHome/Contract";
+import Image from "next/image";
+import verification_success from "../../public/icons/verification_success.png";
 
 export enum KycPage {
   KycForm,
@@ -37,17 +32,18 @@ export interface KycDetails {
 }
 
 const KycHome: React.FC = () => {
-  const [kycPage, setKycPage] = useState<KycPage>(KycPage.KycForm);
   const [step, setStep] = useState<number>(0);
   const [selfie, setSelfie] = useState("");
   const [connected, setConnected] = useState<boolean>(false);
-  const description = "This is a description.";
   const [loading, setLoading] = useState(false);
 
-  const [aadhar, setAadhar] = useState<Aadhar>({ front: {} as FileList, back: {} as FileList });
-    const { addUserKycInfo, getUserKycInfo, fetchWalletInfo } = useContext(
+  const [aadhar, setAadhar] = useState<Aadhar>({
+    front: {} as FileList,
+    back: {} as FileList,
+  });
+  const { addUserKycInfo, getUserKycInfo, fetchWalletInfo } = useContext(
     contractContext
-    ) as ContractContextType;
+  ) as ContractContextType;
   const [kycData, setKycData] = useState<any>();
   const [kycDetails, setKycDetails] = useState<KycDetails>({
     firstName: "",
@@ -56,7 +52,7 @@ const KycHome: React.FC = () => {
     gender: "",
     aadhaarNumber: "",
     selfieURL: "",
-    createDate: ""
+    createDate: "",
   });
 
   const connectToWallet = async () => {
@@ -74,14 +70,12 @@ const KycHome: React.FC = () => {
       setLoading(false);
     }
   }, [getUserKycInfo]);
-  console.log(kycData);
 
   useEffect(() => {
     if (connected) {
       contactHandler();
     }
   }, [connected, contactHandler]);
-
 
   const onFormSubmit = (values: any) => {
     console.log(values);
@@ -92,13 +86,14 @@ const KycHome: React.FC = () => {
       lastName: values.lastName,
       dob: values.dob["$d"].toLocaleString(),
       gender: values.gender,
-      aadhaarNumber: values.aadhaarNumber
+      aadhaarNumber: values.aadhaarNumber,
     });
     setStep(step + 1);
   };
 
-  const onKYCDetailsSubmit = async() => {
-    await addUserKycInfo(kycDetails.firstName,
+  const onKYCDetailsSubmit = async () => {
+    await addUserKycInfo(
+      kycDetails.firstName,
       kycDetails.lastName,
       kycDetails.gender,
       kycDetails.dob,
@@ -106,22 +101,20 @@ const KycHome: React.FC = () => {
       "FRONTURL",
       "BACKURL",
       "SELFIEURL",
-      kycDetails.createDate);
-  }
+      kycDetails.createDate
+    );
+  };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
-  const goBack = () => {
-    setStep(step ? step - 1 : 0);
-  }
 
   const initialValues = {
     firstName: kycDetails.firstName,
-      lastName: kycDetails.lastName,
-      gender: kycDetails.gender,
-      aadhaarNumber: kycDetails.aadhaarNumber
-  }
+    lastName: kycDetails.lastName,
+    gender: kycDetails.gender,
+    aadhaarNumber: kycDetails.aadhaarNumber,
+  };
 
   const stepperContent = useCallback(() => {
     switch (step) {
@@ -148,6 +141,12 @@ const KycHome: React.FC = () => {
                   <Form.Item
                     label="First Name"
                     name="firstName"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Enter  your First Name!",
+                      },
+                    ]}
                     required
                     css={{ width: "33%" }}
                   >
@@ -157,6 +156,12 @@ const KycHome: React.FC = () => {
                     label="Last Name"
                     name="lastName"
                     css={{ width: "40%" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Enter  your Last Name!",
+                      },
+                    ]}
                     required
                   >
                     <Input placeholder="Enter Last Name" />
@@ -165,6 +170,12 @@ const KycHome: React.FC = () => {
                     name="gender"
                     label="Gender"
                     required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Enter your Gender!",
+                      },
+                    ]}
                     css={{ width: "25%" }}
                   >
                     <Select placeholder="Gender">
@@ -178,14 +189,29 @@ const KycHome: React.FC = () => {
                     name="dob"
                     label="Date of Birth"
                     required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Enter your Date of Birth!",
+                      },
+                    ]}
                     css={{ width: "35%" }}
                   >
-                    <DatePicker placeholder="Choose Date" css={{ width: "100%" }} />
+                    <DatePicker
+                      placeholder="Choose Date"
+                      css={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="aadhaarNumber"
                     label="Aadhaar Number"
                     required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Enter  your Aadhar  Number!",
+                      },
+                    ]}
                     css={{ width: "62%" }}
                   >
                     <Input type="number" placeholder="Enter Aadhar Number" />
@@ -199,54 +225,131 @@ const KycHome: React.FC = () => {
                   textAlign: "center",
                 }}
               >
-                <Button type="blue" onClick={()=>{}} typeAttribute="submit">Next</Button>
+                <Button type="blue" onClick={() => {}} typeAttribute="submit">
+                  Next
+                </Button>
               </Form.Item>
             </Form>
           </div>
         );
         break;
       case 1:
-        return <UploadAadhar step={step} setStep={setStep} aadhar={aadhar} setAadhar={setAadhar} />;
+        return (
+          <UploadAadhar
+            step={step}
+            setStep={setStep}
+            aadhar={aadhar}
+            setAadhar={setAadhar}
+          />
+        );
         break;
       case 2:
-        return <AddSelfie step={step} setStep={setStep} selfie={selfie} setSelfie={setSelfie} onSubmit={onKYCDetailsSubmit} />;
+        return (
+          <AddSelfie
+            step={step}
+            setStep={setStep}
+            selfie={selfie}
+            setSelfie={setSelfie}
+            onSubmit={onKYCDetailsSubmit}
+          />
+        );
         break;
       case 3:
-        return <div>DONE</div>;
+        return (
+          <div css={styles.kycComplete}>
+            <Image src={verification_success} alt={"success"} />
+            <Typography.Paragraph>KYC Upload Successful</Typography.Paragraph>
+            <div css={{ marginTop: "100px" }}>
+              <Button
+                type="secondary"
+                onClick={() => {}}
+                typeAttribute="submit"
+              >
+                DONE
+              </Button>
+            </div>
+          </div>
+        );
         break;
     }
   }, [step, aadhar, selfie]);
   return (
     <div css={styles.addKyc}>
-      {kycData&&kycData["FirstName"].length ? <div>
-        First Name: {kycData["FirstName"]}<br/>
-        Last Name: {kycData["LastName"]}<br/>
-        D.O.B: {kycData["DOB"]}<br/>
-        Aadhaar No.: {kycData["AadhaarNumber"]}
-      </div> :
-        <div>
-      <Typography.Title level={4}>Add KYC</Typography.Title>
-      <Steps
-        css={{ width: "100%" }}
-        current={step}
-        items={[
-          {
-            title: "Personal Details",
-          },
-          {
-            title: "Upload Aadhar",
-          },
-          {
-            title: "Add Selfie",
-          },
-          {
-            title: "Done",
-          },
-        ]}
-      />
-          <div css={{ marginTop: "20px" }}>{stepperContent()}</div>
+      {kycData && kycData["FirstName"].length ? (
+        <div
+          css={{
+            background: colors.Zeb_BG_Light_Blue,
+            marginTop: "40px",
+            padding: "2%",
+            borderRadius: "8px",
+          }}
+        >
+          <div
+            css={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div css={styles.heading}>First Name:</div>{" "}
+            <Typography.Text>{kycData["FirstName"]}</Typography.Text>
           </div>
-      }
+          <div
+            css={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div css={styles.heading}>Last Name:</div>{" "}
+            <Typography.Text>{kycData["LastName"]}</Typography.Text>
+          </div>
+          <div
+            css={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div css={styles.heading}>D.O.B:</div>{" "}
+            <Typography.Text>{kycData["DOB"]}</Typography.Text>
+          </div>
+          <div
+            css={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div css={styles.heading}>Aadhaar No : </div>{" "}
+            <Typography.Text css={{ marginRight: "20px" }}>
+              {kycData["AadhaarNumber"]}{" "}
+            </Typography.Text>
+            <Button type="link" size="small" onClick={() => {}}>
+              View
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <Typography.Title level={4}>Add KYC</Typography.Title>
+          <Steps
+            css={{ width: "100%" }}
+            current={step}
+            items={[
+              {
+                title: "Personal Details",
+              },
+              {
+                title: "Upload Aadhar",
+              },
+              {
+                title: "Add Selfie",
+              },
+              {
+                title: "Done",
+              },
+            ]}
+          />
+          <div css={{ marginTop: "20px" }}>{stepperContent()}</div>
+        </div>
+      )}
     </div>
   );
 };

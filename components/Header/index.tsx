@@ -1,44 +1,49 @@
 /** @jsxImportSource @emotion/react */
 import * as styles from "./styles";
 import Button from "../shared/Button";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { contractContext } from "../UserHome/Contract";
+import { ContractContextType } from "../UserHome/Contract/context";
 import { useRouter } from "next/router";
 import metamask from "../../public/images/metamsk 1.png";
 import Image from "next/image";
+import { setIsLoggedIn, setUserAddress } from "../../actions/user";
+import { useSelector } from "react-redux";
+import { StoreState } from "../../reducers";
+import { UserState } from "../../reducers/userInfo";
 
 const Header = () => {
   const router = useRouter();
   const pathName = router.pathname;
   const [defaultAccount, setDefaultAccount] = useState("");
   const [signoutVisible, setSignOutVisible] = useState(false);
+  const userState = useSelector<StoreState, UserState>(state => state.user);
+  const { addContract, getUserContracts, fetchWalletInfo } = useContext(
+    contractContext
+  ) as ContractContextType;
 
   const accountChangedHandler = (newAccount:any) => {
     if (newAccount) {
-      sessionStorage.setItem("user_address", String(newAccount));
       setDefaultAccount(String(newAccount));
+      setUserAddress(String(newAccount));
+      setIsLoggedIn(true);
     }
     else sessionStorage.clear();
   }
 
   useEffect(() => {
-    const userAddress = sessionStorage.getItem("user_address");
-    const loginCheck = window.ethereum?.isBraveWallet ||
-      window.ethereum?.isMetaMask ||
-      window.ethereum?.isCoinbaseWallet ||
-      window.ethereum?.isFrame ||
-      window.ethereum?.isTally;
 
-    if (!userAddress || userAddress === "") {
+    if (!userState.isLoggedIn) {
       if (pathName !== "/") {
         router.push("/");
       }
     }
-    if (userAddress) {
-      setDefaultAccount(userAddress);
+    if (userState.address) {
+      setDefaultAccount(userState.address);
     } else {
       setDefaultAccount("");
     }
-  }, []);
+  }, [pathName, router, userState]);
   
   const connectWalletHandler = () => {
     if (window.ethereum) {
@@ -97,8 +102,9 @@ const Header = () => {
             {signoutVisible && <span css={styles.signoutContainer}>
               <div css={styles.selectOverlay} onClick={()=>setSignOutVisible(false)}></div>
               <div css={styles.signout} onClick={() => {
-              setDefaultAccount("");
-                sessionStorage.setItem("user_address", "")
+                setDefaultAccount("");
+                setIsLoggedIn(false);
+                setUserAddress("");
                 setSignOutVisible(false);
             }}>Sign Out</div></span>}
           </div> : <Button type="link" onClick={connectWalletHandler} style={styles.buttonStyle}>

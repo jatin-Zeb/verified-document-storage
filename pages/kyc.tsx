@@ -1,7 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { ConnectWallet } from "@thirdweb-dev/react";
 import { Button, Typography } from "@web3uikit/core";
-import { url } from "inspector";
 import type { NextPage } from "next";
 import { useState } from "react";
 import KycHome from "../components/Kyc";

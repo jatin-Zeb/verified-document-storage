@@ -1,25 +1,26 @@
+import { Document } from "../typings/docs";
 import createReducer from "../utils/redux/createReducer";
 
 export enum ActionType {
-  SET_USER_DOCUMENT = "SET_USER_DOCUMENT",
+  SET_USER_DOCUMENTS = "SET_USER_DOCUMENTS",
 }
 
-export interface UserState {
-  address: Array<any>;
+export interface UserDocs {
+  uploadedDocs: Document[];
 }
 
-const initialState: UserState = {
-  address: [],
+const initialState: UserDocs = {
+  uploadedDocs: []
 };
 
-export default createReducer<UserState>(initialState, {
-  [ActionType.SET_USER_DOCUMENT](
-    state: UserState,
+export default createReducer<UserDocs>(initialState, {
+  [ActionType.SET_USER_DOCUMENTS](
+    state: UserDocs,
     payload: unknown
-  ): UserState {
+  ): UserDocs {
     return {
       ...state,
-      address: payload as Array<any>,
+      uploadedDocs: payload as Document[],
     };
   },
 });

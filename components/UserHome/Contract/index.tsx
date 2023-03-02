@@ -131,6 +131,16 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     }
   }
 
+  async function getUserKycInfo() {
+    if (userAddress) {
+    const contract = await checkAndConnectContract();
+    const result = await contract.getUserKycInfo(userAddress);
+    return result;
+    }else {
+      console.log("wallet not connnected");
+    }
+  }
+
   return (
     <contractContext.Provider
       value={{ addContract, getContract, fetchWalletInfo, getUserContracts, addUserKycInfo, getUserKycInfo }}

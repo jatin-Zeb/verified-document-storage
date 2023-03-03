@@ -103,16 +103,15 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   }
 
   async function getUserContracts() {
+    getAllUserContracts();
     if (userAddress) {
       const contract = await checkAndConnectContract();
 
-      const contractCounts = await contract.getContractsCount_address(
-        userAddress
-      );
+      const contractSHA = await contract.getContractbyCreator();
 
       var result:Document[] = [];
-      for (var i = 0; i < contractCounts; i++) {
-        const res: Document = await contract.getContractbyCreator(userAddress, i);
+      for (var i = 0; i < contractSHA.length; i++) {
+        const res:Document  = await contract.getContract(contractSHA[i]);
         result.push(res);
       }
       return result;
@@ -131,9 +130,57 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     }
   }
 
+  async function getAllUserContracts() {
+    if (userAddress) {
+      const contract = await checkAndConnectContract();
+      var AllSigned = [];
+      var Signed = [];
+      var Pending = [];
+
+      const createdContractSha =  await contract.getContractbyCreator();
+      const contractShaArray = await contract.getAllInvitedContracts();
+      const SHAs = createdContractSha.concat(contractShaArray)
+
+      for(var i=0;i<SHAs.length;i++){
+        const sha = SHAs[i];
+        const contractDetails = await contract.getContract(sha);
+        const data = await contract.getContractInfo(sha);
+        const AddressesInvolved = data[0]
+        const EmailsInvolved = data[1]
+        const Statuses = data[2]
+        const isAllSigned = data[3]
+        const isSelfSigned = data[4]
+        
+        if(isAllSigned){
+          AllSigned.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
+        }else if(isSelfSigned){
+          Signed.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
+        }else{
+          Pending.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
+        }
+      }
+
+      console.log("all signed");
+      console.log(AllSigned);
+      console.log("signed");
+      console.log(Signed);
+      console.log("pending");
+      console.log(Pending);
+
+      return [AllSigned,Signed,Pending];
+    } else {
+      console.log("wallet not connnected");
+    }
+  }
+
+  async function approveTransaction(sha: string) {
+    const contract = await checkAndConnectContract();
+    await contract.approveTransaction(sha);
+  }
+
   return (
     <contractContext.Provider
-      value={{ addContract, getContract, fetchWalletInfo, getUserContracts, addUserKycInfo, getUserKycInfo }}
+      value={{ addContract, getContract, fetchWalletInfo, getUserContracts, addUserKycInfo, getUserKycInfo, approveTransaction, getAllUserContracts }}
     >
       {children}
     </contractContext.Provider>

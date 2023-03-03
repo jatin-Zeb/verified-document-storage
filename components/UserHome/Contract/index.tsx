@@ -132,21 +132,17 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
 
   async function getAllUserContracts() {
     if (userAddress) {
-
-      console.log("I am in getUserContracts");
-      
       const contract = await checkAndConnectContract();
       var AllSigned = [];
       var Signed = [];
       var Pending = [];
 
-
-      //1. Deailing with Contract that the User Created
       const createdContractSha =  await contract.getContractbyCreator();
       const contractShaArray = await contract.getAllInvitedContracts();
+      const SHAs = createdContractSha.concat(contractShaArray)
 
-      for(var i=0;i<contractShaArray.length;i++){
-        const sha = contractShaArray[i];
+      for(var i=0;i<SHAs.length;i++){
+        const sha = SHAs[i];
         const contractDetails = await contract.getContract(sha);
         const data = await contract.getContractInfo(sha);
         const AddressesInvolved = data[0]
@@ -156,34 +152,10 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         const isSelfSigned = data[4]
         
         if(isAllSigned){
-          console.log("all signed in");
           AllSigned.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
         }else if(isSelfSigned){
-          console.log("signed in");
           Signed.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
         }else{
-          console.log("pending in");
-          Pending.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
-        }
-      }
-      for(var i=0;i<createdContractSha.length;i++){
-        const sha = createdContractSha[i];
-        const contractDetails = await contract.getContract(sha);
-        const data = await contract.getContractInfo(sha);
-        const AddressesInvolved = data[0]
-        const EmailsInvolved = data[1]
-        const Statuses = data[2]
-        const isAllSigned = data[3]
-        const isSelfSigned = data[4]
-        
-        if(isAllSigned){
-          console.log("all signed in");
-          AllSigned.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
-        }else if(isSelfSigned){
-          console.log("signed in");
-          Signed.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
-        }else{
-          console.log("pending in");
           Pending.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
         }
       }
@@ -194,7 +166,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       console.log(Signed);
       console.log("pending");
       console.log(Pending);
-
 
       return [AllSigned,Signed,Pending];
     } else {

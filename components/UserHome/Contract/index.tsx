@@ -152,11 +152,11 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         const isSelfSigned = data[4]
         
         if(isAllSigned){
-          AllSigned.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
+          AllSigned.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
         }else if(isSelfSigned){
-          Signed.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
+          Signed.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
         }else{
-          Pending.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses});
+          Pending.push({contractDetails,AddressesInvolved,EmailsInvolved,Statuses, sha});
         }
       }
 
@@ -173,9 +173,14 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     }
   }
 
+  async function approveTransaction(sha: string) {
+    const contract = await checkAndConnectContract();
+    await contract.approveTransaction(sha);
+  }
+
   return (
     <contractContext.Provider
-      value={{ addContract, getContract, fetchWalletInfo, getUserContracts, addUserKycInfo, getUserKycInfo }}
+      value={{ addContract, getContract, fetchWalletInfo, getUserContracts, addUserKycInfo, getUserKycInfo, approveTransaction, getAllUserContracts }}
     >
       {children}
     </contractContext.Provider>

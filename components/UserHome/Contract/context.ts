@@ -28,4 +28,6 @@ export type ContractContextType = {
   getUserContracts: () => Promise<Document[]>;
   fetchWalletInfo: () => Promise<boolean>;
   getUserKycInfo: () => {};
+  getAllUserContracts: () => {};
+  approveTransaction: (sha: string) => any;
 };

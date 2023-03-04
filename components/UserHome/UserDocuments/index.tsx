@@ -124,7 +124,6 @@ const UserDocuments = () => {
         // const imageUrl = await getImageUrlFromMetaData(metadata.url)
         await addContract(
           values.Category || "",
-          values.Type || "",
           values.Description || "",
           values.Name || "",
           values.Email || "",

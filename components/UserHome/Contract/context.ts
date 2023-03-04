@@ -3,7 +3,6 @@ import { Document } from "../../../typings/docs";
 export type ContractContextType = {
   addContract: (
     category: string,
-    type: string,
     description: string,
     name: string,
     email: string,

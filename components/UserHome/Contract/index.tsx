@@ -46,7 +46,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
 
   async function addContract(
     category: string,
-    type: string,
     description: string,
     name: string,
     email: string,
@@ -61,7 +60,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     const contract = await checkAndConnectContract();
     await contract.addContract(
       category,
-      type,
       description,
       name,
       email,

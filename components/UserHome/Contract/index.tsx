@@ -54,7 +54,9 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     endDate: string,
     createDate: string,
     sha256: string,
-    IPFSUri: string
+    IPFSUri: string,
+    InvitesAddress: string[],
+    InvitesEmail: string[]
   ) {
     const contract = await checkAndConnectContract();
     await contract.addContract(
@@ -67,7 +69,9 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       endDate,
       createDate,
       sha256,
-      IPFSUri
+      IPFSUri,
+      InvitesAddress,
+      InvitesEmail
     );
   }
 

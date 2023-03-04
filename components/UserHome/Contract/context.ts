@@ -11,7 +11,9 @@ export type ContractContextType = {
     endDate: string,
     createDate: string,
     sha256: string,
-    IPFSUri: string
+    IPFSUri: string,
+    InvitesAddress: string[],
+    InvitesEmail: string[]
   ) => {};
   addUserKycInfo: (
     firstName: string,

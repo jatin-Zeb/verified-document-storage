@@ -132,7 +132,9 @@ const UserDocuments = () => {
           values.DateRange[1]["$d"].toLocaleString() || "",
           currentTime.toLocaleString(),
           sha256,
-          metadata.url
+          metadata.url,
+          [], //add invite address as array of string, for no invite -> add empty array
+          [] //add invite email as array of string in same order of address, for no invite -> add empty array
         );
 
         // await loadMyDocuments();

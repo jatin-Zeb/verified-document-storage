@@ -25,6 +25,8 @@ import { setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { Document } from "../../../typings/docs";
+import crossImg from "../../../public/icons/cross.png";
+import Image from "next/image";
 
 const UserDocuments = () => {
   const [connected, setConnected] = useState<boolean>(false); // to be made into global state
@@ -32,6 +34,7 @@ const UserDocuments = () => {
   const [uplodedDocument, setUploadedDocument] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const documents = useSelector<StoreState, Document[]>(state => state.docs.uploadedDocs);
+  const [participantsLength, setParticipantsLength] = useState(0);
   const { addContract, getUserContracts, fetchWalletInfo } = useContext(
     contractContext
   ) as ContractContextType;
@@ -121,6 +124,12 @@ const UserDocuments = () => {
         const sha256 = await blobToSHA256(uplodedDocument);
         console.log("SHA256 of File :=> ", sha256);
         const currentTime = new Date();
+        const emailArray: string[] = [];
+        const walletArray: string[] = [];
+        for (var i = 1; i <= participantsLength; i++){
+          emailArray.push(values["emailAddress" + String(i)]);
+          walletArray.push(values["walletAddress" + String(i)])
+        }
         // const imageUrl = await getImageUrlFromMetaData(metadata.url)
         await addContract(
           values.Category || "",
@@ -132,8 +141,8 @@ const UserDocuments = () => {
           currentTime.toLocaleString(),
           sha256,
           metadata.url,
-          [], //add invite address as array of string, for no invite -> add empty array
-          [] //add invite email as array of string in same order of address, for no invite -> add empty array
+          walletArray,
+          emailArray
         );
 
         // await loadMyDocuments();
@@ -270,15 +279,46 @@ const UserDocuments = () => {
             <Form.Item name="DateRange" label="Contract Validity Date">
               <DatePicker.RangePicker />
             </Form.Item>
-            <Form.Item label="Type" name="Type">
-              <Input />
-            </Form.Item>
             <Form.Item label="Category" name="Category">
               <Input />
             </Form.Item>
             <Form.Item name="Description" label="Description">
               <Input.TextArea rows={4} />
             </Form.Item>
+            {
+              [...Array(participantsLength)].map((val, key) => <div key={key} css={styles.participantInput}>
+                <Image
+                  css={styles.cross}
+                  src={crossImg}
+                  height={20}
+                  width={25}
+                  alt=""
+                  onClick={() =>
+                    setParticipantsLength(participantsLength - 1)}
+                />
+                <Form.Item
+                  rules={[{ required: true, message: "Please input Email!", type: "email" }]}
+                  label={`Email Address ${key + 1}`}
+                  name={`emailAddress${key + 1}`}
+                >
+              <Input />
+                </Form.Item>
+                <Form.Item
+                  rules={[{ required: true, message: "Please input your Address!" }]}
+                  label={`Wallet Address ${key + 1}`}
+                  name={`walletAddress${key + 1}`}
+                >
+              <Input />
+            </Form.Item>
+              </div>)
+            }
+            {participantsLength < 3
+              && <div
+                css={styles.addParticipant}
+                onClick={() =>
+                  setParticipantsLength(participantsLength + 1)}>
+                Add Participant+
+              </div>}
             <Form.Item name="UploadedFile" label="Dragger">
               <Upload
                 descriptionText="Only .jpeg files are accepted"

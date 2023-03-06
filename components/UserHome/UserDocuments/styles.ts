@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { colors, mixins } from "../../../styles1";
+import { colors, mixins, typography } from "../../../styles1";
 
 export const userDocuments = css({
   width: "100%",
@@ -15,3 +15,24 @@ export const heading = css({
   justifyContent: "space-between",
   alignItems: "center",
 });
+
+export const addParticipant = css({
+  ...typography.B6_12_semibold,
+  color: colors.Zeb_Solid_Bright_Blue,
+  cursor: "pointer"
+})
+
+export const participantInput = css({
+  background: colors.Zeb_Transparent_4,
+  padding: "10px",
+  borderRadius: "8px",
+  position: "relative",
+  marginBottom: "20px"
+})
+
+export const cross = css({
+  position: "absolute",
+  right: 10,
+  top: 10,
+  cursor: "pointer"
+})

@@ -25,43 +25,52 @@ import { setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { Document } from "../../../typings/docs";
+import { MPC, UploadedDocsProps } from "../../../reducers/docs";
+import { UserState } from "../../../reducers/userInfo";
 
 const UserDocuments = () => {
-  const [connected, setConnected] = useState<boolean>(false); // to be made into global state
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
-  const documents = useSelector<StoreState, Document[]>(state => state.docs.uploadedDocs);
+  const { all, signed, pending } = useSelector<StoreState, UploadedDocsProps>(
+    (state) => state.docs.uploadedDocs
+  );
+  const { isLoggedIn } = useSelector<StoreState, UserState>(
+    (state) => state.user
+  );
   const { addContract, getUserContracts, fetchWalletInfo } = useContext(
     contractContext
   ) as ContractContextType;
   const [messageApi, contextHolder] = message.useMessage();
 
   const connectToWallet = async () => {
-    const isConnected = await fetchWalletInfo();
-    setConnected(isConnected);
+    await fetchWalletInfo();
   };
-  useEffect(() => {
-    connectToWallet();
-  });
 
+  useEffect(() => {
+    console.log(isLoggedIn);
+  }, [isLoggedIn]);
+  useEffect(() => {
+    console.log("is Logged In", isLoggedIn);
+  }, [isLoggedIn]);
   const contactHandler = useCallback(async () => {
-    const contracts = await getUserContracts();
-    setUserDocs(contracts);
+    await getUserContracts();
   }, [getUserContracts]);
 
   useEffect(() => {
-    if (connected) {
-      contactHandler();
+    if (isLoggedIn) {
+      getUserContracts();
     }
-  }, [connected, contactHandler]);
+  }, [isLoggedIn, contactHandler]);
 
-  const populateUseDocuments = () => {
-    if (!documents.length) return [[]];
-    const data = documents.map((document: Document, idx: number) => {
+  const populateUseDocuments = (documents: MPC[]) => {
+    console.log(" i m run");
+    console.log(documents);
+    if (!documents.length) return [];
+    const data = documents.map((data: MPC, idx: number) => {
+      const document = data.contractDetails;
       return [
         <div key={1}>{idx + 1}</div>,
-        <p key={2}>{document.Type}</p>,
         <p key={3}>{document.Desc}</p>,
         <p key={4}>{document.Category}</p>,
         <p key={5}>{document.StartDate}</p>,
@@ -150,14 +159,6 @@ const UserDocuments = () => {
     }
   };
 
-  // const normFile = (e: any) => {
-  //   console.log("Upload event:", e);
-  //   if (Array.isArray(e)) {
-  //     return e;
-  //   }
-  //   return e?.fileList;
-  // };
-
   return (
     <div css={styles.userDocuments}>
       {contextHolder}
@@ -189,7 +190,6 @@ const UserDocuments = () => {
                 columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
                 header={[
                   "Sr.",
-                  "Type",
                   "Desciption",
                   "Category",
                   "StartDate",
@@ -197,7 +197,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={documents ? populateUseDocuments() : []}
+                data={populateUseDocuments(all)}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}
@@ -208,12 +208,54 @@ const UserDocuments = () => {
           {
             key: "2",
             label: `SIGNED`,
-            children: `Content of Tab Pane 1`,
+            children: (
+              <Table
+                tableBackgroundColor="#F5F5F5"
+                customTableBorder="border-top:1px"
+                headerBgColor="#FFFFFF"
+                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                header={[
+                  "Sr.",
+                  "Desciption",
+                  "Category",
+                  "StartDate",
+                  "EndDate",
+                  "Actions",
+                ]}
+                alignCellItems="center"
+                data={populateUseDocuments(signed)}
+                maxPages={3}
+                onPageNumberChanged={function noRefCheck() {}}
+                onRowClick={function noRefCheck() {}}
+                pageSize={4}
+              />
+            ),
           },
           {
             key: "3",
             label: `PENDING`,
-            children: `Content of Tab Pane 1`,
+            children: (
+              <Table
+                tableBackgroundColor="#F5F5F5"
+                customTableBorder="border-top:1px"
+                headerBgColor="#FFFFFF"
+                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                header={[
+                  "Sr.",
+                  "Desciption",
+                  "Category",
+                  "StartDate",
+                  "EndDate",
+                  "Actions",
+                ]}
+                alignCellItems="center"
+                data={populateUseDocuments(pending)}
+                maxPages={3}
+                onPageNumberChanged={function noRefCheck() {}}
+                onRowClick={function noRefCheck() {}}
+                pageSize={4}
+              />
+            ),
           },
         ]}
         onChange={(value) => {

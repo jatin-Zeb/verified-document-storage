@@ -12,6 +12,9 @@ import {
 import { useCallback, useContext } from "react";
 
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { StoreState } from "../../../reducers";
+import { KYCDocs } from "../../../reducers/kyc";
 import { colors, mixins, typography } from "../../../styles1";
 import KycHome from "../../Kyc";
 import Referral from "../../Referral";
@@ -27,21 +30,16 @@ const UserDetails = () => {
   const [uplodedDocument, setUploadedDocument] = useState<
     Blob | null | undefined
   >();
-  const [kycVerified, setKycVerified] = useState<boolean>(false);
+  const { kycVerified, kycDocs } = useSelector<StoreState, KYCDocs>(
+    (state) => state.kyc
+  );
   const { getUserKycInfo } = useContext(contractContext) as ContractContextType;
-  const [kycData, setKycData] = useState<any>({
-    FirstName: "- ",
-    LastName: " -",
-    DOB: "-",
-    AadhaarNumber: "-",
-  });
+
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);
   };
-  useEffect(() => {
-    console.log(kycData);
-  }, [kycData]);
+
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -55,15 +53,12 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
+    console.log(" i m run");
     (async () => {
-      const data: { [key: string]: number } = await getUserKycInfo();
-      setKycVerified(!!(data && data["AadhaarNumber"]));
-      if (data && data["AadhaarNumber"]) setKycData(data);
+      await getUserKycInfo();
     })();
-  }, [getUserKycInfo]);
-  useEffect(() => {
-    console.log(uplodedDocument);
-  }, [uplodedDocument]);
+  }, []);
+
   return (
     <div css={styles.userDocuments}>
       <div css={styles.heading}>
@@ -79,7 +74,7 @@ const UserDetails = () => {
             label: `PROFILE`,
             children: (
               <div>
-                {!kycVerified && (
+                {kycVerified === 0 && (
                   <div
                     css={styles.uploadKyc}
                     onClick={() => {
@@ -109,7 +104,7 @@ const UserDetails = () => {
                         <div css={styles.info}>
                           <div css={styles.infoHead}>First Name</div>
                           <div css={styles.infoSubHead}>
-                            {kycData["FirstName"]}
+                            {kycDocs.FirstName}
                           </div>
                         </div>
                         <div css={styles.info}>
@@ -130,7 +125,7 @@ const UserDetails = () => {
                           <div css={styles.infoHead}>Last Name</div>
                           <div css={styles.infoSubHead}>
                             {" "}
-                            {kycData["LastName"]}
+                            {kycDocs.LastName}
                           </div>
                         </div>
                         <div css={styles.info}>
@@ -174,7 +169,7 @@ const UserDetails = () => {
             key: "2",
             label: `REFERRAL`,
             children: <Referral />,
-            disabled: !kycVerified,
+            disabled: kycVerified !== 2,
           },
           {
             key: "3",
@@ -185,7 +180,7 @@ const UserDetails = () => {
             key: "4",
             label: `SAVED ADDRESSES`,
             children: `Content of Tab Pane 1`,
-            disabled: !kycVerified,
+            disabled: kycVerified !== 2,
           },
         ]}
         onChange={(activeKey) => {

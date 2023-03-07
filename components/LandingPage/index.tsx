@@ -1,28 +1,89 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import * as styles from "./styles";
 import Header from "../Header";
 import Button from "../shared/Button";
 import blockchain from "../../public/images/blockchain.png";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { StoreState } from "../../reducers";
+import { KYCDocs } from "../../reducers/kyc";
+import { UserState } from "../../reducers/userInfo";
+import { useRouter } from "next/router";
+import { setIsLoggedIn, setUserAddress } from "../../actions/user";
+import { contractContext } from "../UserHome/Contract";
+import { ContractContextType } from "../UserHome/Contract/context";
 
 const LandingPage: React.FC = () => {
-  return <div css={styles.landingContainer}>
-    <Header />
-    <div css={styles.body}>
-      <div css={styles.getStarted}>
-        <div css={styles.getStartedText}>
-          Looking for better way to store documents?
+  const router = useRouter();
+  const { kycVerified } = useSelector<StoreState, KYCDocs>(
+    (state) => state.kyc
+  );
+  const { fetchWalletInfo, getUserKycInfo } = useContext(
+    contractContext
+  ) as ContractContextType;
+
+  const { isLoggedIn } = useSelector<StoreState, UserState>(
+    (state) => state.user
+  );
+  // useEffect(() => {
+  //   fetchWalletInfo();
+  // }, []);
+  useEffect(() => {
+    console.log(isLoggedIn);
+    if (isLoggedIn) {
+      (async () => {
+        await getUserKycInfo();
+      })();
+    }
+  }, [isLoggedIn]);
+  const accountChangedHandler = (newAccount: any) => {
+    if (newAccount) {
+      setUserAddress(String(newAccount));
+      // setIsLoggedIn(true);
+    } else sessionStorage.clear();
+  };
+
+  const connectWalletHandler = () => {
+    if (window.ethereum) {
+      window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((result) => {
+          accountChangedHandler(result[0]);
+        });
+    }
+  };
+
+  const getStartedClickHandler = () => {
+    if (kycVerified === 2) router.push("/docs");
+    else router.push("/profile");
+  };
+  return (
+    <div css={styles.landingContainer}>
+      <Header />
+      <div css={styles.body}>
+        <div css={styles.getStarted}>
+          <div css={styles.getStartedText}>
+            Looking for better way to store documents?
+          </div>
+          <div>
+            <Button
+              type="link"
+              onClick={
+                isLoggedIn ? getStartedClickHandler : connectWalletHandler
+              }
+              style={styles.getStartedButton}
+            >
+              {!isLoggedIn ? "Login?" : " Lets Get You Started"}
+            </Button>
+          </div>
         </div>
-        <div>
-          <Button type="link" onClick={()=>{}} style={styles.getStartedButton}>Lets Get You Started</Button>
+        <div css={styles.icon}>
+          <Image src={blockchain} alt="" />
         </div>
-      </div>
-      <div css={styles.icon}>
-        <Image src={blockchain} alt="" />
       </div>
     </div>
-  </div>;
-}
+  );
+};
 
 export default LandingPage;

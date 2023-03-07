@@ -7,6 +7,5 @@ export interface Document {
   IPFSURI: string;
   Name: string;
   StartDate: string;
-  Type: string;
   length: number;
 }

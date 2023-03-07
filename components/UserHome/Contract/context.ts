@@ -24,10 +24,10 @@ export type ContractContextType = {
     aadhaarBackURL: string,
     selfieURL: string,
     createDate: string
-  )=>{};
+  ) => {};
   getContract: (IPFSUri: string) => any;
   getUserContracts: () => Promise<Document[]>;
-  fetchWalletInfo: () => Promise<boolean>;
+  fetchWalletInfo: () => Promise<void>;
   getUserKycInfo: () => {};
   getAllUserContracts: () => {};
   approveTransaction: (sha: string) => any;

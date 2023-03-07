@@ -6,25 +6,30 @@ export const header = css({
   height: utils.remConverter(72),
   padding: utils.remConverter(20),
   display: "flex",
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 });
 
-export const webName = (path: string)=>css({
-  ...typography.B2_20_regular,
-  textDecoration: "none",
-  color: path==="/"?"" : "#444444"
-})
+export const webName = (path: string) =>
+  css({
+    ...typography.B2_20_regular,
+    textDecoration: "none",
+    color: path === "/" ? "" : "#444444",
+  });
 
 export const topBar = css({
   display: "flex",
   alignItems: "center",
-  gap: utils.remConverter(30)
-})
+  gap: utils.remConverter(30),
+});
 
-export const subHeading = css({
-  textDecoration: "none",
-  cursor: "pointer"
-})
+export const subHeading = (show: boolean = true) => {
+  return css({
+    pointerEvents: show ? "inherit" : "none",
+    textDecoration: "none",
+    cursor: "pointer",
+    opacity: show ? "1" : "0.4",
+  });
+};
 
 export const buttonStyle = css({
   ...typography.C3_14,
@@ -35,20 +40,20 @@ export const buttonStyle = css({
   backgroundColor: "white",
   borderRadius: utils.remConverter(8),
   padding: utils.remConverter(4),
-  position:"relative"
-})
+  position: "relative",
+});
 
 export const loginStatus = css({
   display: "flex",
   alignItems: "center",
-  gap: utils.remConverter(8)
-})
+  gap: utils.remConverter(8),
+});
 
 export const loginButton = css({
   backgroundColor: "white",
   position: "absolute",
   top: 0,
-  opacity:0,
+  opacity: 0,
   color: "black",
   border: "none",
   outline: "none",
@@ -58,29 +63,29 @@ export const loginButton = css({
   padding: utils.remConverter(4),
   overflow: "hidden",
   button: {
-    width: "140px !important"
-  }
-})
+    width: "140px !important",
+  },
+});
 
 export const address = css({
   position: "relative",
   color: "black",
   display: "flex",
-  alignItems: "center"
-})
+  alignItems: "center",
+});
 export const signout = css({
   position: "fixed",
   backgroundColor: "white",
   padding: "10px",
   borderRadius: "8px",
   cursor: "pointer",
-  zIndex: 99
-})
+  zIndex: 99,
+});
 
 export const signoutContainer = css({
   position: "absolute",
   top: "40px",
-})
+});
 
 export const selectOverlay = css({
   position: "fixed",

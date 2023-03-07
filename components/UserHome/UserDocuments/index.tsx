@@ -10,8 +10,11 @@ import {
   Spin,
   Typography,
   message,
+  Modal,
+  Popover,
+  Tag
 } from "antd";
-import { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { colors, mixins, typography } from "../../../styles1";
 import { NFTStorage, File } from "nft.storage";
 import * as styles from "./styles";
@@ -25,57 +28,92 @@ import { setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { Document } from "../../../typings/docs";
+import { MPC, UploadedDocsProps } from "../../../reducers/docs";
+import { UserState } from "../../../reducers/userInfo";
+import { KYCDocs } from "../../../reducers/kyc";
 import crossImg from "../../../public/icons/cross.png";
 import Image from "next/image";
 
 const UserDocuments = () => {
-  const [connected, setConnected] = useState<boolean>(false); // to be made into global state
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [uplodedDocument, setUploadedDocument] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
-  const documents = useSelector<StoreState, Document[]>(state => state.docs.uploadedDocs);
-  const [participantsLength, setParticipantsLength] = useState(0);
-  const { addContract, getUserContracts, fetchWalletInfo } = useContext(
+  const { all, signed, pending } = useSelector<StoreState, UploadedDocsProps>(
+    (state) => state.docs.uploadedDocs
+  );
+  const { isLoggedIn } = useSelector<StoreState, UserState>(
+    (state) => state.user
+  );
+  const { kycVerified } = useSelector<StoreState,KYCDocs>(state=>state.kyc)
+  const { addContract, getUserContracts, fetchWalletInfo, approveTransaction } = useContext(
     contractContext
   ) as ContractContextType;
+  const [participantsLength, setParticipantsLength] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const connectToWallet = async () => {
-    const isConnected = await fetchWalletInfo();
-    setConnected(isConnected);
-  };
-  useEffect(() => {
-    connectToWallet();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    emailsInvolved: string[],
+    statuses: boolean[],
+    addressesInvolved: string[]
+  }>({
+    emailsInvolved: [],
+    statuses: [],
+    addressesInvolved: []
   });
+  const connectToWallet = async () => {
+    await fetchWalletInfo();
+  };
 
+  useEffect(() => {
+    console.log(isLoggedIn);
+  }, [isLoggedIn]);
+  useEffect(() => {
+    console.log("is Logged In", isLoggedIn);
+  }, [isLoggedIn]);
   const contactHandler = useCallback(async () => {
-    const contracts = await getUserContracts();
-    setUserDocs(contracts);
+    await getUserContracts();
   }, [getUserContracts]);
 
   useEffect(() => {
-    if (connected) {
-      contactHandler();
+    if (isLoggedIn) {
+      getUserContracts();
     }
-  }, [connected, contactHandler]);
+  }, [isLoggedIn, contactHandler]);
 
-  const populateUseDocuments = () => {
-    if (!documents.length) return [[]];
-    const data = documents.map((document: Document, idx: number) => {
+  const setModal = (EmailsInvolved:string[], statuses: boolean[], AddressesInvolved: string[] ) => {
+    setModalData({
+      emailsInvolved: EmailsInvolved,
+      statuses: statuses,
+      addressesInvolved: AddressesInvolved
+    })
+  }
+
+  const populateUseDocuments = (documents: MPC[], tab: string) => {
+    console.log(" i m run");
+    console.log(documents);
+    if (!documents.length) return [];
+    const data = documents.map((data: MPC, idx: number) => {
+      const document = data.contractDetails;
       return [
         <div key={1}>{idx + 1}</div>,
-        <p key={2}>{document.Type}</p>,
         <p key={3}>{document.Desc}</p>,
         <p key={4}>{document.Category}</p>,
         <p key={5}>{document.StartDate}</p>,
         <p key={6}>{document.EndDate}</p>,
-        <div css={mixins.flexJustifiedBetween} key={4}>
+        <div css={[mixins.flexJustifiedBetween, {gap: "10px", alignItems: "center"}]} key={4}>
           {/* <Button type="link" onClick={() => {}}> */}
           <a href={document.IPFSURI} target="_blank" rel="noreferrer">
             View
           </a>
-          {/* </Button> */}
-          <MoreOutlined />
+          {tab === "pending" && <Button type="blue" onClick={() => {
+            approveTransaction(data.sha);
+         }}>Approve</Button>}
+          <Popover content={<div style={{cursor: "pointer"}} onClick={() => {
+            setModalOpen(true);
+            setModal(data.EmailsInvolved, data.Statuses, data.AddressesInvolved);
+          }}>View Participants</div>} >
+            <MoreOutlined style={{cursor: "pointer"}} />
+          </Popover>
         </div>,
       ];
     });
@@ -159,14 +197,6 @@ const UserDocuments = () => {
     }
   };
 
-  // const normFile = (e: any) => {
-  //   console.log("Upload event:", e);
-  //   if (Array.isArray(e)) {
-  //     return e;
-  //   }
-  //   return e?.fileList;
-  // };
-
   return (
     <div css={styles.userDocuments}>
       {contextHolder}
@@ -189,16 +219,15 @@ const UserDocuments = () => {
         items={[
           {
             key: "1",
-            label: `ALL`,
+            label: <div>ALL SIGNED <span css={styles.contractCount}>{all.length}</span></div>,
             children: (
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
                 headerBgColor="#FFFFFF"
-                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
                 header={[
                   "Sr.",
-                  "Type",
                   "Desciption",
                   "Category",
                   "StartDate",
@@ -206,7 +235,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={documents ? populateUseDocuments() : []}
+                data={populateUseDocuments(all, "allSigned")}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}
@@ -216,13 +245,55 @@ const UserDocuments = () => {
           },
           {
             key: "2",
-            label: `SIGNED`,
-            children: `Content of Tab Pane 1`,
+            label: <div>SIGNED <span css={styles.contractCount}>{signed.length}</span></div>,
+            children: (
+              <Table
+                tableBackgroundColor="#F5F5F5"
+                customTableBorder="border-top:1px"
+                headerBgColor="#FFFFFF"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
+                header={[
+                  "Sr.",
+                  "Desciption",
+                  "Category",
+                  "StartDate",
+                  "EndDate",
+                  "Actions",
+                ]}
+                alignCellItems="center"
+                data={populateUseDocuments(signed, "signed")}
+                maxPages={3}
+                onPageNumberChanged={function noRefCheck() {}}
+                onRowClick={function noRefCheck() {}}
+                pageSize={4}
+              />
+            ),
           },
           {
             key: "3",
-            label: `PENDING`,
-            children: `Content of Tab Pane 1`,
+            label: <div>PENDING <span css={styles.contractCount}>{pending.length}</span></div>,
+            children: (
+              <Table
+                tableBackgroundColor="#F5F5F5"
+                customTableBorder="border-top:1px"
+                headerBgColor="#FFFFFF"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
+                header={[
+                  "Sr.",
+                  "Desciption",
+                  "Category",
+                  "StartDate",
+                  "EndDate",
+                  "Actions",
+                ]}
+                alignCellItems="center"
+                data={populateUseDocuments(pending, "pending")}
+                maxPages={3}
+                onPageNumberChanged={function noRefCheck() {}}
+                onRowClick={function noRefCheck() {}}
+                pageSize={4}
+              />
+            ),
           },
         ]}
         onChange={(value) => {
@@ -338,13 +409,39 @@ const UserDocuments = () => {
               >
                 Cancel
               </Button>
-              <Button type="primary" typeAttribute="submit" onClick={() => {}}>
+              <Button disabled={!(kycVerified===2)} type="primary" typeAttribute="submit" onClick={() => {}}>
                 Submit
               </Button>
             </Form.Item>
           </Form>
         </Spin>
       </Drawer>
+      <Modal
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+      >
+        <div css={styles.participants}>
+          <React.Fragment>
+            <span style={{gridRow: "1/3", fontWeight: "700"}}> Address</span>
+            <span style={{gridRow:"1/3",fontWeight: "700", paddingBottom: "10px"}}>Email</span>
+            <span style={{gridRow: "1/3", fontWeight: "700"}}>Status</span>
+          </React.Fragment>
+          {
+            modalData.emailsInvolved.map((val, key) => {
+              return <React.Fragment key={key}>
+                <Popover content={modalData.addressesInvolved[key]}>
+                  <span>{modalData.addressesInvolved[key].slice(0, 5)}...{modalData.addressesInvolved[key].slice(38, 42)}</span>
+                </Popover>
+                <span>{val}</span>
+                <span style={{paddingBottom: "10px"}}>
+                  <Tag color={modalData.statuses[key] ? "green" : "gold"}>{modalData.statuses[key] ? "SIGNED" : "PENDING"}</Tag>
+                </span>
+              </React.Fragment>
+            })
+            }
+        </div>
+      </Modal>
     </div>
   );
 };

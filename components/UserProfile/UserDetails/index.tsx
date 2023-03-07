@@ -12,6 +12,9 @@ import {
 import { useCallback, useContext } from "react";
 
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { StoreState } from "../../../reducers";
+import { KYCDocs } from "../../../reducers/kyc";
 import { colors, mixins, typography } from "../../../styles1";
 import KycHome from "../../Kyc";
 import Referral from "../../Referral";
@@ -27,21 +30,16 @@ const UserDetails = () => {
   const [uplodedDocument, setUploadedDocument] = useState<
     Blob | null | undefined
   >();
-  const [kycVerified, setKycVerified] = useState<boolean>(false);
+  const { kycVerified, kycDocs } = useSelector<StoreState, KYCDocs>(
+    (state) => state.kyc
+  );
   const { getUserKycInfo } = useContext(contractContext) as ContractContextType;
-  const [kycData, setKycData] = useState<any>({
-    FirstName: "- ",
-    LastName: " -",
-    DOB: "-",
-    AadhaarNumber: "-",
-  });
+
   const onFinish = (values: any) => {
     console.log(values);
     console.log("Success:", values);
   };
-  useEffect(() => {
-    console.log(kycData);
-  }, [kycData]);
+
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -55,15 +53,12 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
+    console.log(" i m run");
     (async () => {
-      const data: { [key: string]: number } = await getUserKycInfo();
-      setKycVerified(!!(data && data["AadhaarNumber"]));
-      if (data && data["AadhaarNumber"]) setKycData(data);
+      await getUserKycInfo();
     })();
-  }, [getUserKycInfo]);
-  useEffect(() => {
-    console.log(uplodedDocument);
-  }, [uplodedDocument]);
+  }, []);
+
   return (
     <div css={styles.userDocuments}>
       <div css={styles.heading}>
@@ -79,7 +74,7 @@ const UserDetails = () => {
             label: `PROFILE`,
             children: (
               <div>
-                {!kycVerified && (
+                {kycVerified === 0 && (
                   <div
                     css={styles.uploadKyc}
                     onClick={() => {
@@ -94,7 +89,7 @@ const UserDetails = () => {
                   <div css={styles.personal}>
                     <div css={styles.header}>
                       <div css={styles.header}>PERSONAL DETAILS</div>
-                      <Button
+                      {/* <Button
                         type="primary"
                         onClick={() => {
                           setOpenDrawer(true);
@@ -102,27 +97,19 @@ const UserDetails = () => {
                         style={{ borderRadius: "8px" }}
                       >
                         Edit
-                      </Button>
+                      </Button> */}
                     </div>
                     <div css={styles.component}>
                       <div style={{ flex: 1.2 }}>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>First Name</div>
                           <div css={styles.infoSubHead}>
-                            {kycData["FirstName"]}
+                            {kycDocs.FirstName}
                           </div>
                         </div>
                         <div css={styles.info}>
-                          <div css={styles.infoHead}>Email</div>
-                          <div css={styles.infoSubHead}>JohnDoe@gmail.com</div>
-                        </div>
-                        <div css={styles.info}>
-                          <div css={styles.infoHead}>Address</div>
-                          <div css={styles.infoSubHead}>fedfwejdujkned</div>
-                        </div>
-                        <div css={styles.info}>
-                          <div css={styles.infoHead}>Political Affiliation</div>
-                          <div css={styles.infoSubHead}>Yes</div>
+                          <div css={styles.infoHead}>D.O.B</div>
+                          <div css={styles.infoSubHead}>{kycDocs.DOB}</div>
                         </div>
                       </div>
                       <div style={{ flex: 1 }}>
@@ -130,17 +117,17 @@ const UserDetails = () => {
                           <div css={styles.infoHead}>Last Name</div>
                           <div css={styles.infoSubHead}>
                             {" "}
-                            {kycData["LastName"]}
+                            {kycDocs.LastName}
                           </div>
                         </div>
                         <div css={styles.info}>
-                          <div css={styles.infoHead}>Contact</div>
-                          <div css={styles.infoSubHead}>+91-9876543210</div>
+                          <div css={styles.infoHead}>Aadhaar No.</div>
+                          <div css={styles.infoSubHead}>{kycDocs.AadhaarNumber}</div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div css={styles.financial}>
+                  {/* <div css={styles.financial}>
                     <div css={styles.header}>
                       <div css={styles.header}>FINANCIAL DETAILS</div>
                       <Button
@@ -165,16 +152,10 @@ const UserDetails = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ),
-          },
-          {
-            key: "2",
-            label: `REFERRAL`,
-            children: <Referral />,
-            disabled: !kycVerified,
           },
           {
             key: "3",
@@ -185,7 +166,7 @@ const UserDetails = () => {
             key: "4",
             label: `SAVED ADDRESSES`,
             children: `Content of Tab Pane 1`,
-            disabled: !kycVerified,
+            disabled: kycVerified !== 2,
           },
         ]}
         onChange={(activeKey) => {

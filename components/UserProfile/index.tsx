@@ -7,7 +7,7 @@ import UserDetails from "./UserDetails";
 const UserHome = () => {
   return (
     <div css={styles.userHome}>
-      <ProfileData />
+      {/* <ProfileData /> */}
       <UserDetails />
     </div>
   );

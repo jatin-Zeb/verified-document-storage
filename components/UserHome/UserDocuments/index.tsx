@@ -10,8 +10,11 @@ import {
   Spin,
   Typography,
   message,
+  Modal,
+  Popover,
+  Tag
 } from "antd";
-import { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { colors, mixins, typography } from "../../../styles1";
 import { NFTStorage, File } from "nft.storage";
 import * as styles from "./styles";
@@ -27,6 +30,7 @@ import { StoreState } from "../../../reducers";
 import { Document } from "../../../typings/docs";
 import { MPC, UploadedDocsProps } from "../../../reducers/docs";
 import { UserState } from "../../../reducers/userInfo";
+import { KYCDocs } from "../../../reducers/kyc";
 
 const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -38,11 +42,21 @@ const UserDocuments = () => {
   const { isLoggedIn } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
-  const { addContract, getUserContracts, fetchWalletInfo } = useContext(
+  const { kycVerified } = useSelector<StoreState,KYCDocs>(state=>state.kyc)
+  const { addContract, getUserContracts, fetchWalletInfo, approveTransaction } = useContext(
     contractContext
   ) as ContractContextType;
   const [messageApi, contextHolder] = message.useMessage();
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    emailsInvolved: string[],
+    statuses: boolean[],
+    addressesInvolved: string[]
+  }>({
+    emailsInvolved: [],
+    statuses: [],
+    addressesInvolved: []
+  });
   const connectToWallet = async () => {
     await fetchWalletInfo();
   };
@@ -63,7 +77,15 @@ const UserDocuments = () => {
     }
   }, [isLoggedIn, contactHandler]);
 
-  const populateUseDocuments = (documents: MPC[]) => {
+  const setModal = (EmailsInvolved:string[], statuses: boolean[], AddressesInvolved: string[] ) => {
+    setModalData({
+      emailsInvolved: EmailsInvolved,
+      statuses: statuses,
+      addressesInvolved: AddressesInvolved
+    })
+  }
+
+  const populateUseDocuments = (documents: MPC[], tab: string) => {
     console.log(" i m run");
     console.log(documents);
     if (!documents.length) return [];
@@ -75,13 +97,20 @@ const UserDocuments = () => {
         <p key={4}>{document.Category}</p>,
         <p key={5}>{document.StartDate}</p>,
         <p key={6}>{document.EndDate}</p>,
-        <div css={mixins.flexJustifiedBetween} key={4}>
+        <div css={[mixins.flexJustifiedBetween, {gap: "10px", alignItems: "center"}]} key={4}>
           {/* <Button type="link" onClick={() => {}}> */}
           <a href={document.IPFSURI} target="_blank" rel="noreferrer">
             View
           </a>
-          {/* </Button> */}
-          <MoreOutlined />
+          {tab === "pending" && <Button type="blue" onClick={() => {
+            approveTransaction(data.sha);
+         }}>Approve</Button>}
+          <Popover content={<div style={{cursor: "pointer"}} onClick={() => {
+            setModalOpen(true);
+            setModal(data.EmailsInvolved, data.Statuses, data.AddressesInvolved);
+          }}>View Participants</div>} >
+            <MoreOutlined style={{cursor: "pointer"}} />
+          </Popover>
         </div>,
       ];
     });
@@ -181,13 +210,13 @@ const UserDocuments = () => {
         items={[
           {
             key: "1",
-            label: `ALL`,
+            label: <div>ALL SIGNED <span css={styles.contractCount}>{all.length}</span></div>,
             children: (
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
                 headerBgColor="#FFFFFF"
-                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
                 header={[
                   "Sr.",
                   "Desciption",
@@ -197,7 +226,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={populateUseDocuments(all)}
+                data={populateUseDocuments(all, "allSigned")}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}
@@ -207,13 +236,13 @@ const UserDocuments = () => {
           },
           {
             key: "2",
-            label: `SIGNED`,
+            label: <div>SIGNED <span css={styles.contractCount}>{signed.length}</span></div>,
             children: (
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
                 headerBgColor="#FFFFFF"
-                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
                 header={[
                   "Sr.",
                   "Desciption",
@@ -223,7 +252,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={populateUseDocuments(signed)}
+                data={populateUseDocuments(signed, "signed")}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}
@@ -233,13 +262,13 @@ const UserDocuments = () => {
           },
           {
             key: "3",
-            label: `PENDING`,
+            label: <div>PENDING <span css={styles.contractCount}>{pending.length}</span></div>,
             children: (
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
                 headerBgColor="#FFFFFF"
-                columnsConfig="50px  1fr 2fr 1fr 2fr 2fr 1fr"
+                columnsConfig="50px 2fr 1fr 2fr 2fr 1fr"
                 header={[
                   "Sr.",
                   "Desciption",
@@ -249,7 +278,7 @@ const UserDocuments = () => {
                   "Actions",
                 ]}
                 alignCellItems="center"
-                data={populateUseDocuments(pending)}
+                data={populateUseDocuments(pending, "pending")}
                 maxPages={3}
                 onPageNumberChanged={function noRefCheck() {}}
                 onRowClick={function noRefCheck() {}}
@@ -340,13 +369,39 @@ const UserDocuments = () => {
               >
                 Cancel
               </Button>
-              <Button type="primary" typeAttribute="submit" onClick={() => {}}>
+              <Button disabled={!(kycVerified===2)} type="primary" typeAttribute="submit" onClick={() => {}}>
                 Submit
               </Button>
             </Form.Item>
           </Form>
         </Spin>
       </Drawer>
+      <Modal
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+      >
+        <div css={styles.participants}>
+          <React.Fragment>
+            <span style={{gridRow: "1/3", fontWeight: "700"}}> Address</span>
+            <span style={{gridRow:"1/3",fontWeight: "700", paddingBottom: "10px"}}>Email</span>
+            <span style={{gridRow: "1/3", fontWeight: "700"}}>Status</span>
+          </React.Fragment>
+          {
+            modalData.emailsInvolved.map((val, key) => {
+              return <React.Fragment key={key}>
+                <Popover content={modalData.addressesInvolved[key]}>
+                  <span>{modalData.addressesInvolved[key].slice(0, 5)}...{modalData.addressesInvolved[key].slice(38, 42)}</span>
+                </Popover>
+                <span>{val}</span>
+                <span style={{paddingBottom: "10px"}}>
+                  <Tag color={modalData.statuses[key] ? "green" : "gold"}>{modalData.statuses[key] ? "SIGNED" : "PENDING"}</Tag>
+                </span>
+              </React.Fragment>
+            })
+            }
+        </div>
+      </Modal>
     </div>
   );
 };

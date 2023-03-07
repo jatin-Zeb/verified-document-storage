@@ -42,7 +42,7 @@ export const header = css({
   justifyContent: "space-between",
   fontWeight: "600",
   color: "#444444",
-  textDecoration: "underline",
+  textDecoration: "underline"
 });
 
 export const component = css({
@@ -53,7 +53,10 @@ export const info = css({
   marginBottom: "10px",
 });
 
-export const infoHead = css({});
+export const infoHead = css({
+  fontWeight: "700"
+});
+
 export const infoSubHead = css({
   fontWeight: "600",
   color: "#444444",

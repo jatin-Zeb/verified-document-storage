@@ -73,7 +73,7 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
-        <div css={styles.webName(pathName)}>Verified Document Storage</div>
+        <div css={styles.webName(pathName)}>DocuSmriti</div>
         {router.pathname === "/" ? (
           <>
             <div
@@ -110,9 +110,6 @@ const Header = () => {
       </div>
 
       <div css={styles.loginStatus}>
-        <Button type="link" onClick={() => {}} style={styles.buttonStyle}>
-          Get Started
-        </Button>
         <div css={{ position: "relative" }}>
           {defaultAccount !== "" ? (
             <div css={styles.address}>

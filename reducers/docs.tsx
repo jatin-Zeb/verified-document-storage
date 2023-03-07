@@ -8,7 +8,7 @@ export enum ActionType {
 export interface MPC {
   AddressesInvolved: Array<string>;
   EmailsInvolved: Array<string>;
-  Statuses: boolean;
+  Statuses: Array<boolean>;
   contractDetails: Document;
   sha: string;
 }

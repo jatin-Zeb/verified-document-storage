@@ -77,17 +77,22 @@ const KycHome: React.FC = () => {
   };
 
   const onKYCDetailsSubmit = async () => {
-    await addUserKycInfo(
-      kycDetails.firstName,
-      kycDetails.lastName,
-      kycDetails.gender,
-      kycDetails.dob,
-      kycDetails.aadhaarNumber,
-      "FRONTURL",
-      "BACKURL",
-      "SELFIEURL",
-      kycDetails.createDate
-    );
+    const addKYC = async () => {
+      await addUserKycInfo(
+        kycDetails.firstName,
+        kycDetails.lastName,
+        kycDetails.gender,
+        kycDetails.dob,
+        kycDetails.aadhaarNumber,
+        "FRONTURL",
+        "BACKURL",
+        "SELFIEURL",
+        kycDetails.createDate
+      );
+    }
+    addKYC().then(() => {
+      setStep(step + 1);
+    })
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -306,9 +311,9 @@ const KycHome: React.FC = () => {
             <Typography.Text css={{ marginRight: "20px" }}>
               {kycDocs.AadhaarNumber}{" "}
             </Typography.Text>
-            <Button type="link" size="small" onClick={() => {}}>
+            {/* <Button type="link" size="small" onClick={() => {}}>
               View
-            </Button>
+            </Button> */}
           </div>
         </div>
       ) : (

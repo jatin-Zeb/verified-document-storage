@@ -89,7 +89,7 @@ const UserDetails = () => {
                   <div css={styles.personal}>
                     <div css={styles.header}>
                       <div css={styles.header}>PERSONAL DETAILS</div>
-                      <Button
+                      {/* <Button
                         type="primary"
                         onClick={() => {
                           setOpenDrawer(true);
@@ -97,7 +97,7 @@ const UserDetails = () => {
                         style={{ borderRadius: "8px" }}
                       >
                         Edit
-                      </Button>
+                      </Button> */}
                     </div>
                     <div css={styles.component}>
                       <div style={{ flex: 1.2 }}>
@@ -108,16 +108,8 @@ const UserDetails = () => {
                           </div>
                         </div>
                         <div css={styles.info}>
-                          <div css={styles.infoHead}>Email</div>
-                          <div css={styles.infoSubHead}>JohnDoe@gmail.com</div>
-                        </div>
-                        <div css={styles.info}>
-                          <div css={styles.infoHead}>Address</div>
-                          <div css={styles.infoSubHead}>fedfwejdujkned</div>
-                        </div>
-                        <div css={styles.info}>
-                          <div css={styles.infoHead}>Political Affiliation</div>
-                          <div css={styles.infoSubHead}>Yes</div>
+                          <div css={styles.infoHead}>D.O.B</div>
+                          <div css={styles.infoSubHead}>{kycDocs.DOB}</div>
                         </div>
                       </div>
                       <div style={{ flex: 1 }}>
@@ -129,13 +121,13 @@ const UserDetails = () => {
                           </div>
                         </div>
                         <div css={styles.info}>
-                          <div css={styles.infoHead}>Contact</div>
-                          <div css={styles.infoSubHead}>+91-9876543210</div>
+                          <div css={styles.infoHead}>Aadhaar No.</div>
+                          <div css={styles.infoSubHead}>{kycDocs.AadhaarNumber}</div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div css={styles.financial}>
+                  {/* <div css={styles.financial}>
                     <div css={styles.header}>
                       <div css={styles.header}>FINANCIAL DETAILS</div>
                       <Button
@@ -160,16 +152,10 @@ const UserDetails = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ),
-          },
-          {
-            key: "2",
-            label: `REFERRAL`,
-            children: <Referral />,
-            disabled: kycVerified !== 2,
           },
           {
             key: "3",

@@ -15,3 +15,20 @@ export const heading = css({
   justifyContent: "space-between",
   alignItems: "center",
 });
+
+export const contractCount = css({
+  borderRadius: "10px",
+  padding: "2px 7px",
+  backgroundColor: "rgb(135, 206, 235, 0.5)"
+});
+
+export const participants = css({
+  display: "grid"
+});
+
+export const truncate = css({
+  width: "200px",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  overflow: "hidden"
+});

@@ -73,7 +73,7 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
-        <div css={styles.webName(pathName)}>DocuSmriti</div>
+        <div css={styles.webName(pathName)}>📂 DocuSmriti</div>
         {router.pathname === "/" ? (
           <>
             <div
@@ -94,8 +94,6 @@ const Header = () => {
                 Kyc
               </div>
             )}
-            <div css={styles.subHeading()}>FAQs</div>
-            <div css={styles.subHeading()}>About Us</div>
           </>
         ) : (
           <Button

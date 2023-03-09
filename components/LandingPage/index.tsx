@@ -67,15 +67,6 @@ const LandingPage: React.FC = () => {
             Looking for better way to store documents?
           </div>
           <div>
-            <Button
-              type="link"
-              onClick={
-                isLoggedIn ? getStartedClickHandler : connectWalletHandler
-              }
-              style={styles.getStartedButton}
-            >
-              {!isLoggedIn ? "Login?" : " Lets Get You Started"}
-            </Button>
           </div>
         </div>
         <div css={styles.icon}>

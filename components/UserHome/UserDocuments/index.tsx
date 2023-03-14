@@ -45,7 +45,7 @@ const UserDocuments = () => {
     (state) => state.user
   );
   const { kycVerified } = useSelector<StoreState,KYCDocs>(state=>state.kyc)
-  const { addContract, getUserContracts, fetchWalletInfo, approveTransaction } = useContext(
+  const { addContract, getUserContracts, fetchWalletInfo, approveTransaction, getContractInfo } = useContext(
     contractContext
   ) as ContractContextType;
   const [participantsLength, setParticipantsLength] = useState(0);

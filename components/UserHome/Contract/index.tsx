@@ -222,6 +222,17 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     await contract.approveTransaction(sha);
   }
 
+  async function getContractInfo(sha: string){
+    if (userState.address) {
+      const contract = await checkAndConnectContract();
+      const contractDetails = await contract.getContract(sha);
+      const data = await contract.getContractInfo(sha);
+      return [contractDetails, data];
+    } else {
+      console.log("wallet not connnected");
+    }
+  }
+
   return (
     <contractContext.Provider
       value={{
@@ -233,6 +244,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         getUserKycInfo,
         approveTransaction,
         getAllUserContracts,
+        getContractInfo,
       }}
     >
       {children}

@@ -31,4 +31,5 @@ export type ContractContextType = {
   getUserKycInfo: () => {};
   getAllUserContracts: () => {};
   approveTransaction: (sha: string) => any;
+  getContractInfo: (sha: string) => any;
 };

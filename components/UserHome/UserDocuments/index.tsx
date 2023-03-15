@@ -33,6 +33,7 @@ import { UserState } from "../../../reducers/userInfo";
 import { KYCDocs } from "../../../reducers/kyc";
 import crossImg from "../../../public/icons/cross.png";
 import Image from "next/image";
+import VerifyDoc from "../VerifyDoc";
 
 const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -49,6 +50,7 @@ const UserDocuments = () => {
     contractContext
   ) as ContractContextType;
   const [participantsLength, setParticipantsLength] = useState(0);
+  const [verifyDocOpen, setVerifyDocOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<{
@@ -204,6 +206,13 @@ const UserDocuments = () => {
         <p css={{ ...typography.H5_20_bold, color: colors.Zeb_Solid_Dark }}>
           Your Documents
         </p>
+        <div>
+        <Button
+          style={{ marginRight: "10px" }}
+          type="secondary" onClick={() => setVerifyDocOpen(true)}
+        >
+          Verify Document
+        </Button>
         <Button
           type="primary"
           onClick={() => {
@@ -213,6 +222,7 @@ const UserDocuments = () => {
         >
           Upload +
         </Button>
+        </div>
       </div>
       <Tabs
         defaultActiveKey="1"
@@ -302,6 +312,14 @@ const UserDocuments = () => {
       />
 
       <Drawer
+        open={verifyDocOpen}
+        onClose={() => setVerifyDocOpen(false)}
+        title="Verify Document"
+      >
+        <VerifyDoc />
+      </Drawer>
+
+      <Drawer
         open={openDrawer}
         width={"30%"}
         onClose={() => {
@@ -327,7 +345,7 @@ const UserDocuments = () => {
             layout="vertical"
           >
             <Form.Item
-              label="Name"
+              label="Document Title"
               name="Name"
               rules={[{ required: true, message: "Please input your Name!" }]}
             >

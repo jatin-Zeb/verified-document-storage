@@ -22,7 +22,6 @@ const SideBar: React.FC<SideBarProps> = ({
     return [
       { content: "Profile", id: "profile" },
       { content: "My Docs", id: "docs" },
-      { content: "Verify", id: "verify" },
       { content: "Setting", id: "setting" },
     ];
   }, []);
@@ -36,7 +35,6 @@ const SideBar: React.FC<SideBarProps> = ({
         <div css={styles.optionSpace}>
           <UserOutlined css={styles.optionIcon} />
           <FileTextOutlined css={styles.optionIcon} />
-          <CheckCircleOutlined css={styles.optionIcon} />
           <SettingFilled css={styles.optionIcon} />
         </div>
       </div>

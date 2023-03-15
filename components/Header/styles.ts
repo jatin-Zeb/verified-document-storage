@@ -72,6 +72,7 @@ export const address = css({
   color: "black",
   display: "flex",
   alignItems: "center",
+  cursor: "pointer",
 });
 export const signout = css({
   position: "fixed",

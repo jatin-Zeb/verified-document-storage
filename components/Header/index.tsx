@@ -5,13 +5,16 @@ import { useContext, useEffect, useState } from "react";
 import { contractContext } from "../UserHome/Contract";
 import { ContractContextType } from "../UserHome/Contract/context";
 import { useRouter } from "next/router";
-import metamask from "../../public/images/metamsk 1.png";
+import metamask from "../../public/images/metamsk.png";
+import logo_doc from "../../public/images/logo_doc1.png";
+
 import Image from "next/image";
 import { setIsLoggedIn, setUserAddress } from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
 import { KYCDocs } from "../../reducers/kyc";
+import { Tooltip } from "antd";
 
 const Header = () => {
   const router = useRouter();
@@ -77,7 +80,19 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
-        <div css={styles.webName(pathName)}>📂 DocuSmriti</div>
+        <div css={styles.webName(pathName)}>
+          <Image
+            src={logo_doc}
+            alt=""
+            onClick={() => setSignOutVisible(!signoutVisible)}
+            style={{
+              marginTop: "1.25rem",
+              filter: "brightness(0.5)",
+            }}
+            width={50}
+          />
+        </div>
+        DocuSmriti
         {router.pathname === "/" ? (
           <>
             <div
@@ -128,9 +143,12 @@ const Header = () => {
                 alt=''
                 onClick={() => setSignOutVisible(!signoutVisible)}
               />
-              <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                {defaultAccount}
-              </span>
+              <Tooltip placement="bottomRight" title={defaultAccount}>
+                <span onClick={() => setSignOutVisible(!signoutVisible)}>
+                  {defaultAccount.slice(0, 10) + "..."}
+                </span>
+              </Tooltip>
+
               {signoutVisible && (
                 <span css={styles.signoutContainer}>
                   <div

@@ -80,19 +80,17 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
-        <div css={styles.webName(pathName)}>
-          <Image
-            src={logo_doc}
-            alt=""
-            onClick={() => setSignOutVisible(!signoutVisible)}
-            style={{
-              marginTop: "1.25rem",
-              filter: "brightness(0.5)",
-            }}
-            width={50}
-          />
-        </div>
-        DocuSmriti
+        <Image
+          src={logo_doc}
+          alt=""
+          onClick={() => setSignOutVisible(!signoutVisible)}
+          style={{
+            filter: "brightness(0.5)",
+          }}
+          width={50}
+        />
+        <div css={styles.webName(pathName)}>DocuSmriti</div>
+
         {router.pathname === "/" ? (
           <>
             <div
@@ -124,7 +122,7 @@ const Header = () => {
           </>
         ) : (
           <Button
-            type='link'
+            type="link"
             onClick={() => {
               router.push("/");
             }}
@@ -140,12 +138,14 @@ const Header = () => {
             <div css={styles.address}>
               <Image
                 src={metamask}
-                alt=''
+                alt=""
                 onClick={() => setSignOutVisible(!signoutVisible)}
               />
               <Tooltip placement="bottomRight" title={defaultAccount}>
                 <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                  {defaultAccount.slice(0, 10) + "..."}
+                  {defaultAccount.slice(0, 5) +
+                    "....." +
+                    defaultAccount.slice(defaultAccount.length - 5)}
                 </span>
               </Tooltip>
 
@@ -171,7 +171,7 @@ const Header = () => {
             </div>
           ) : (
             <Button
-              type='link'
+              type="link"
               onClick={connectWalletHandler}
               style={styles.buttonStyle}
             >

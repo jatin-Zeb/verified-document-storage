@@ -41,11 +41,7 @@ const Header = () => {
       if (pathName !== "/") {
         router.push("/");
       }
-      if (pathName == "/aboutUs") {
-        router.push("/aboutUs");
-      }
     }
-
     if (userState.address) {
       setDefaultAccount(userState.address);
     } else {
@@ -81,14 +77,6 @@ const Header = () => {
         {router.pathname === "/" ? (
           <>
             <div
-              css={styles.subHeading()}
-              onClick={() => {
-                router.push("/aboutUs");
-              }}
-            >
-              About Us
-            </div>
-            <div
               css={styles.subHeading(userState.isLoggedIn && kycVerified === 2)}
               onClick={() => {
                 if (userState.isLoggedIn) router.push("/docs");
@@ -109,7 +97,7 @@ const Header = () => {
           </>
         ) : (
           <Button
-            type='link'
+            type="link"
             onClick={() => {
               router.push("/");
             }}
@@ -125,7 +113,7 @@ const Header = () => {
             <div css={styles.address}>
               <Image
                 src={metamask}
-                alt=''
+                alt=""
                 onClick={() => setSignOutVisible(!signoutVisible)}
               />
               <span onClick={() => setSignOutVisible(!signoutVisible)}>
@@ -153,7 +141,7 @@ const Header = () => {
             </div>
           ) : (
             <Button
-              type='link'
+              type="link"
               onClick={connectWalletHandler}
               style={styles.buttonStyle}
             >

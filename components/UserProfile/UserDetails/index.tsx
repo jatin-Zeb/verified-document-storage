@@ -104,25 +104,28 @@ const UserDetails = () => {
                         <div css={styles.info}>
                           <div css={styles.infoHead}>First Name</div>
                           <div css={styles.infoSubHead}>
-                            {kycDocs.FirstName}
+                            {kycDocs.FirstName || "-"}
                           </div>
                         </div>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>D.O.B</div>
-                          <div css={styles.infoSubHead}>{kycDocs.DOB}</div>
+                          <div css={styles.infoSubHead}>
+                            {kycDocs.DOB || "-"}
+                          </div>
                         </div>
                       </div>
                       <div style={{ flex: 1 }}>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>Last Name</div>
                           <div css={styles.infoSubHead}>
-                            {" "}
-                            {kycDocs.LastName}
+                            {kycDocs.LastName || "-"}
                           </div>
                         </div>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>Aadhaar No.</div>
-                          <div css={styles.infoSubHead}>{kycDocs.AadhaarNumber}</div>
+                          <div css={styles.infoSubHead}>
+                            {kycDocs.AadhaarNumber || "-"}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { colors, mixins, typography } from "../../../styles1";
 
 export const userDocuments = css({
-  width: "80%",
+  width: "100%",
   border: `0.5px solid ${colors.Zeb_Border_Grey}`,
   borderRadius: "30px",
   height: "85vh",
@@ -42,7 +42,7 @@ export const header = css({
   justifyContent: "space-between",
   fontWeight: "600",
   color: "#444444",
-  textDecoration: "underline"
+  textDecoration: "underline",
 });
 
 export const component = css({
@@ -54,7 +54,7 @@ export const info = css({
 });
 
 export const infoHead = css({
-  fontWeight: "700"
+  fontWeight: "700",
 });
 
 export const infoSubHead = css({

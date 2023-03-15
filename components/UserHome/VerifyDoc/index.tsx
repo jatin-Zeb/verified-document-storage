@@ -49,7 +49,6 @@ const VerifyDoc: React.FC = () => {
           onChange={(file) => {
           setUploadedDocument(file);
           setShowState(false);
-          console.log(file, "PPAP")
         }} />
       </Form.Item>
       <Form.Item style={{display: "flex", justifyContent: "center"}}>

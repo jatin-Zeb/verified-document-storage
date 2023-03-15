@@ -38,11 +38,8 @@ const Header = () => {
   }, [userState]);
   useEffect(() => {
     if (!userState.isLoggedIn) {
-      if (pathName !== "/") {
+      if (pathName !== "/" && pathName !== "/aboutUs") {
         router.push("/");
-      }
-      if (pathName == "/aboutUs") {
-        router.push("/aboutUs");
       }
     }
 

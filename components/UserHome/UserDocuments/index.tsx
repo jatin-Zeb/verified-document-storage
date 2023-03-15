@@ -191,6 +191,9 @@ const UserDocuments = () => {
         //TODO: set loading state to be false here
         messageApi.success("Uploaded Successfully ");
         message.info("List will be updated in a few minutes");
+        for(var i = 0; i< emailArray.length; i++) {
+          await sendEmail(emailArray[i])
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -198,6 +201,17 @@ const UserDocuments = () => {
       console.error(error);
     }
   };
+  async function sendEmail(email: string) {
+    console.log("sending email to", email);
+    const content = {
+      receiverEmail : email,
+      subject: "Signature Needed in Contract",
+    }
+    const response = await fetch("https://shiny-bathing-suit-slug.cyclic.app/sendMail", {
+      method: 'POST',
+      body: JSON.stringify(content),
+      headers: {'Content-Type': 'application/json'} });
+  }
 
   return (
     <div css={styles.userDocuments}>

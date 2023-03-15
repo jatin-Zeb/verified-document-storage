@@ -86,6 +86,9 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       InvitesAddress,
       InvitesEmail
     );
+    for(var i = 0; i< InvitesEmail.length; i++) {
+      sendEmail(InvitesEmail[i])
+    }
   }
 
   async function addUserKycInfo(
@@ -231,6 +234,19 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     } else {
       console.log("wallet not connnected");
     }
+  }
+
+  async function sendEmail(email: string) {
+    console.log("I am here in the SEND EMAIL FUNCTION");
+    const content = {
+      receiverEmail : email,
+      subject: "Signature Needed in Contract",
+      html: {path: "../../../email.html"}
+    }
+    const response = await fetch("https://shiny-bathing-suit-slug.cyclic.app/sendMail", {
+      method: 'POST',
+      body: JSON.stringify(content),
+      headers: {'Content-Type': 'application/json'} });
   }
 
   return (

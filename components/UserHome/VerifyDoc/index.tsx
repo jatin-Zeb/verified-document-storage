@@ -30,7 +30,6 @@ const VerifyDoc: React.FC = () => {
    if (docDetails) {
      setShowState(true);
      setDocsFound(docDetails);
-     console.log(docDetails);
    }
  }
   return <div>

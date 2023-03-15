@@ -6,6 +6,12 @@ import {
   FileTextOutlined,
   UserOutlined,
   CheckCircleOutlined,
+  SettingOutlined,
+  FileTextFilled,
+  QqOutlined,
+  QqCircleFilled,
+  RobotOutlined,
+  RobotFilled,
 } from "@ant-design/icons";
 import { SideBarProps } from "./typings";
 import { Button, FloatButton } from "antd";
@@ -33,9 +39,23 @@ const SideBar: React.FC<SideBarProps> = ({
           onClick={toggleExpand}
         />
         <div css={styles.optionSpace}>
-          <UserOutlined css={styles.optionIcon} />
-          <FileTextOutlined css={styles.optionIcon} />
-          <SettingFilled css={styles.optionIcon} />
+          {/* <UserOutlined css={styles.optionIcon} /> */}
+          {router.pathname === "/profile" ? (
+            <RobotFilled css={styles.optionIcon} />
+          ) : (
+            <RobotOutlined css={styles.optionIcon} />
+          )}
+          {router.pathname === "/docs" ? (
+            <FileTextFilled css={styles.optionIcon} />
+          ) : (
+            <FileTextOutlined css={styles.optionIcon} />
+          )}
+
+          {router.pathname === "/setting" ? (
+            <SettingFilled css={styles.optionIcon} />
+          ) : (
+            <SettingOutlined css={styles.optionIcon} />
+          )}
         </div>
       </div>
 

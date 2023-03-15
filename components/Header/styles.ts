@@ -14,6 +14,7 @@ export const webName = (path: string) =>
     ...typography.B2_20_regular,
     textDecoration: "none",
     color: path === "/" ? "" : "#444444",
+    marginLeft: "-20px",
   });
 
 export const topBar = css({
@@ -72,6 +73,7 @@ export const address = css({
   color: "black",
   display: "flex",
   alignItems: "center",
+  cursor: "pointer",
 });
 export const signout = css({
   position: "fixed",

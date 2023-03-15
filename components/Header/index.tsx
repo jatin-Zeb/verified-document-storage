@@ -5,13 +5,16 @@ import { useContext, useEffect, useState } from "react";
 import { contractContext } from "../UserHome/Contract";
 import { ContractContextType } from "../UserHome/Contract/context";
 import { useRouter } from "next/router";
-import metamask from "../../public/images/metamsk 1.png";
+import metamask from "../../public/images/metamsk.png";
+import logo_doc from "../../public/images/logo_doc1.png";
+
 import Image from "next/image";
 import { setIsLoggedIn, setUserAddress } from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
 import { KYCDocs } from "../../reducers/kyc";
+import { Tooltip } from "antd";
 
 const Header = () => {
   const router = useRouter();
@@ -74,7 +77,17 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
-        <div css={styles.webName(pathName)}>📂 DocuSmriti</div>
+        <Image
+          src={logo_doc}
+          alt=""
+          onClick={() => setSignOutVisible(!signoutVisible)}
+          style={{
+            filter: "brightness(0.5)",
+          }}
+          width={50}
+        />
+        <div css={styles.webName(pathName)}>DocuSmriti</div>
+
         {router.pathname === "/" ? (
           <>
             <div
@@ -106,7 +119,7 @@ const Header = () => {
           </>
         ) : (
           <Button
-            type='link'
+            type="link"
             onClick={() => {
               router.push("/");
             }}
@@ -122,12 +135,17 @@ const Header = () => {
             <div css={styles.address}>
               <Image
                 src={metamask}
-                alt=''
+                alt=""
                 onClick={() => setSignOutVisible(!signoutVisible)}
               />
-              <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                {defaultAccount}
-              </span>
+              <Tooltip placement="bottomRight" title={defaultAccount}>
+                <span onClick={() => setSignOutVisible(!signoutVisible)}>
+                  {defaultAccount.slice(0, 5) +
+                    "....." +
+                    defaultAccount.slice(defaultAccount.length - 5)}
+                </span>
+              </Tooltip>
+
               {signoutVisible && (
                 <span css={styles.signoutContainer}>
                   <div
@@ -150,7 +168,7 @@ const Header = () => {
             </div>
           ) : (
             <Button
-              type='link'
+              type="link"
               onClick={connectWalletHandler}
               style={styles.buttonStyle}
             >

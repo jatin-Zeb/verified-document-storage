@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import * as styles from "./styles";
 import Header from "../Header";
 import Button from "../shared/Button";
-import blockchain from "../../public/images/blockchain.png";
+import blockchain from "../../public/images/blockchain111.gif";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
@@ -66,8 +66,7 @@ const LandingPage: React.FC = () => {
           <div css={styles.getStartedText}>
             Looking for better way to store documents?
           </div>
-          <div>
-          </div>
+          <div></div>
         </div>
         <div css={styles.icon}>
           <Image src={blockchain} alt="" />

@@ -6,15 +6,15 @@ import { contractContext } from "../UserHome/Contract";
 import { ContractContextType } from "../UserHome/Contract/context";
 import { useRouter } from "next/router";
 import metamask from "../../public/images/metamsk.png";
+import google from "../../public/images/google.png";
 import logo_doc from "../../public/images/logo_doc1.png";
-
 import Image from "next/image";
 import { setIsLoggedIn, setUserAddress } from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
 import { KYCDocs } from "../../reducers/kyc";
-import { Tooltip } from "antd";
+import { Tooltip, Modal } from "antd";
 
 const Header = () => {
   const router = useRouter();
@@ -28,6 +28,7 @@ const Header = () => {
   const { kycVerified } = useSelector<StoreState, KYCDocs>(
     (state) => state.kyc
   );
+  const [openModal, setOpenModal] = useState(false);
 
   const accountChangedHandler = (newAccount: any) => {
     if (newAccount) {
@@ -38,7 +39,10 @@ const Header = () => {
   };
   useEffect(() => {
     console.log(userState);
-  }, [userState]);
+    if (defaultAccount !== "") {
+      setOpenModal(false);
+    }
+  }, [userState, defaultAccount]);
   useEffect(() => {
     if (!userState.isLoggedIn) {
       if (pathName !== "/" && pathName !== "/aboutUs") {
@@ -169,7 +173,7 @@ const Header = () => {
           ) : (
             <Button
               type="link"
-              onClick={connectWalletHandler}
+                onClick={() => setOpenModal(true)}
               style={styles.buttonStyle}
             >
               Login
@@ -177,6 +181,26 @@ const Header = () => {
           )}
         </div>
       </div>
+      <Modal
+        open={openModal}
+        onCancel={() => setOpenModal(false)}
+        footer={""}
+        title="LOGIN"
+        width={300}
+      >
+        <div>
+          <div css={styles.loginOptionContainer}>
+            <Image css={styles.loginImg} src={google} alt="" width={20} />
+            <div css={styles.loginTitle}>Google</div>
+          </div>
+        </div>
+        <div>
+          <div css={styles.loginOptionContainer} onClick={connectWalletHandler}>
+            <Image css={styles.loginImg} src={metamask} alt="" width={20} />
+            <div css={styles.loginTitle}>Metamask</div>
+          </div>
+        </div>
+      </Modal> 
     </div>
   );
 };

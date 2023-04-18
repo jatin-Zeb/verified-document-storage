@@ -9,12 +9,14 @@ import metamask from "../../public/images/metamsk.png";
 import google from "../../public/images/google.png";
 import logo_doc from "../../public/images/logo_doc1.png";
 import Image from "next/image";
-import { setIsLoggedIn, setUserAddress } from "../../actions/user";
+import { setGoogleLoginData, setIsLoggedIn, setUserAddress } from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
 import { KYCDocs } from "../../reducers/kyc";
 import { Tooltip, Modal } from "antd";
+import { googleLogout, useGoogleLogin, TokenResponse } from "@react-oauth/google";
+import axios from "axios";
 
 const Header = () => {
   const router = useRouter();
@@ -29,7 +31,52 @@ const Header = () => {
     (state) => state.kyc
   );
   const [openModal, setOpenModal] = useState(false);
+  const [googleToken, setGoogleToken] = useState("");
+  const profile = userState.googleData;
+  useEffect(() => {
+    const sessionToken = sessionStorage.getItem("google_token");
+    if (sessionToken) {
+      setGoogleToken(sessionToken);
+    }
+  }, [])
 
+
+    const login = useGoogleLogin({
+      onSuccess: (codeResponse: TokenResponse) => {
+        setOpenModal(false);
+        sessionStorage.setItem("google_token", codeResponse.access_token);
+        setGoogleToken(codeResponse.access_token);
+      },
+      onError: (error) => console.log('Login Failed:', error)
+    });
+  const logOut = () => {
+    googleLogout();
+    setGoogleLoginData(null);
+    };
+
+  useEffect(
+        () => {
+            if (googleToken) {
+                axios
+                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleToken}`, {
+                        headers: {
+                            Authorization: `Bearer ${googleToken}`,
+                            Accept: 'application/json'
+                        }
+                    })
+                    .then((res) => {
+                      setGoogleLoginData(res.data);
+                      setIsLoggedIn(true);
+                    })
+                  .catch((err) => {
+                    console.log("error in api", err);
+                    sessionStorage.removeItem("google_token");
+                  });
+            }
+        },
+        [ googleToken ]
+  );
+  
   const accountChangedHandler = (newAccount: any) => {
     if (newAccount) {
       setDefaultAccount(String(newAccount));
@@ -170,7 +217,46 @@ const Header = () => {
                 </span>
               )}
             </div>
-          ) : (
+          ) : profile
+              ?
+              <div css={styles.address}>
+              <Image
+                src={profile.picture}
+                width={30}
+                height={30}
+                style={{ borderRadius: "50%" }}
+                alt=""
+                onClick={() => setSignOutVisible(!signoutVisible)}
+              />
+              <Tooltip placement="bottomRight" title={defaultAccount}>
+                <span onClick={() => setSignOutVisible(!signoutVisible)}>
+                  &nbsp;{profile.given_name} {profile.family_name}
+                </span>
+              </Tooltip>
+
+              {signoutVisible && (
+                <span css={styles.signoutContainer}>
+                  <div
+                    css={styles.selectOverlay}
+                    onClick={() => setSignOutVisible(false)}
+                  ></div>
+                  <div
+                    css={styles.signout}
+                    onClick={() => {
+                      setDefaultAccount("");
+                      setIsLoggedIn(false);
+                      setUserAddress("");
+                      setSignOutVisible(false);
+                      setGoogleLoginData(null);
+                      sessionStorage.removeItem("google_token")
+                      logOut();
+                    }}
+                  >
+                    Sign Out
+                  </div>
+                </span>
+              )}
+            </div> : (
             <Button
               type="link"
                 onClick={() => setOpenModal(true)}
@@ -189,7 +275,7 @@ const Header = () => {
         width={300}
       >
         <div>
-          <div css={styles.loginOptionContainer}>
+          <div onClick={()=>login()} css={styles.loginOptionContainer}>
             <Image css={styles.loginImg} src={google} alt="" width={20} />
             <div css={styles.loginTitle}>Google</div>
           </div>

@@ -97,3 +97,23 @@ export const selectOverlay = css({
   left: 0,
   zIndex: "9",
 });
+
+export const loginOptionContainer = css({
+  display: "flex",
+  borderRadius: "50px",
+  margin: "15px",
+  border: "1px solid rgba(0,0,0,0.25)",
+  padding: utils.remConverter(10),
+  position: "relative",
+  cursor: "pointer"
+})
+
+export const loginImg = css({
+  position: "absolute"
+})
+
+export const loginTitle = css({
+  flex: "1",
+  display: "flex",
+  justifyContent: "center"
+})

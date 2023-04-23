@@ -445,6 +445,7 @@ const UserDocuments = () => {
                 Submit
               </Button>
             </Form.Item>
+              <iframe height={500} src={"/payment"} />
           </Form>
         </Spin>
       </Drawer>

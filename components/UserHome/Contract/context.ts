@@ -11,7 +11,6 @@ export type ContractContextType = {
     createDate: string,
     sha256: string,
     IPFSUri: string,
-    InvitesAddress: string[],
     InvitesEmail: string[]
   ) => {};
   addUserKycInfo: (
@@ -30,6 +29,6 @@ export type ContractContextType = {
   fetchWalletInfo: () => Promise<void>;
   getUserKycInfo: () => {};
   getAllUserContracts: () => {};
-  approveTransaction: (sha: string) => any;
+  approveTransaction: (email:string, sha: string) => any;
   getContractInfo: (sha: string) => any;
 };

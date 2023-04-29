@@ -69,7 +69,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     createDate: string,
     sha256: string,
     IPFSUri: string,
-    InvitesAddress: string[],
     InvitesEmail: string[]
   ) {
     const contract = await checkAndConnectContract();
@@ -83,7 +82,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       createDate,
       sha256,
       IPFSUri,
-      InvitesAddress,
       InvitesEmail
     );
   }
@@ -121,10 +119,10 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
 
   async function getUserContracts() {
     getAllUserContracts();
-    if (userState.address) {
+    if (userState.isLoggedIn) {
       const contract = await checkAndConnectContract();
 
-      const contractSHA = await contract.getContractbyCreator();
+      const contractSHA = await contract.getContractbyCreator(userState.googleData?.email);
 
       var result: Document[] = [];
       for (var i = 0; i < contractSHA.length; i++) {
@@ -140,11 +138,20 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   async function getUserKycInfo() {
     console.log("fetch kyc data");
     console.log(userState);
-    if (userState.address) {
-      const contract = await checkAndConnectContract();
-      const result: KYCDocument = await contract.getUserKycInfo(
-        userState.address
-      );
+    if (userState.isLoggedIn) {
+      const kycData:KYCDocument =  {
+        FirstName: "string",
+        LastName: "string",
+        DOB: "string",
+        AadhaarNumber: "string",
+        SelfieURL: "String",
+        Gender: "string",
+        CreateDate: "string",
+        AadhaarBackURL: "string",
+        AadhaarFrontURL: "string",
+      }
+      const result: KYCDocument = kycData
+      
       actionCreator(
         "setKycDocs",
         async (dispatch: Dispatch): Promise<void> => {
@@ -164,30 +171,28 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   }
 
   async function getAllUserContracts() {
-    if (userState.address) {
+    if (userState.isLoggedIn) {
       const contract = await checkAndConnectContract();
       var allSigned = [];
       var signed = [];
       var pending = [];
 
-      const createdContractSha = await contract.getContractbyCreator();
-      const contractShaArray = await contract.getAllInvitedContracts();
+      const createdContractSha = await contract.getContractbyCreator(userState.googleData?.email);
+      const contractShaArray = await contract.getAllInvitedContracts(userState.googleData?.email);
       const SHAs = createdContractSha.concat(contractShaArray);
 
       for (var i = 0; i < SHAs.length; i++) {
         const sha = SHAs[i];
         const contractDetails = await contract.getContract(sha);
-        const data = await contract.getContractInfo(sha);
-        const AddressesInvolved = data[0];
-        const EmailsInvolved = data[1];
-        const Statuses = data[2];
-        const isAllSigned = data[3];
-        const isSelfSigned = data[4];
+        const data = await contract.getContractInfo(userState.googleData?.email, sha);
+        const EmailsInvolved = data[0];
+        const Statuses = data[1];
+        const isAllSigned = data[2];
+        const isSelfSigned = data[3];
 
         if (isAllSigned) {
           allSigned.push({
             contractDetails,
-            AddressesInvolved,
             EmailsInvolved,
             Statuses,
             sha,
@@ -195,7 +200,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         } else if (isSelfSigned) {
           signed.push({
             contractDetails,
-            AddressesInvolved,
             EmailsInvolved,
             Statuses,
             sha,
@@ -203,7 +207,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         } else {
           pending.push({
             contractDetails,
-            AddressesInvolved,
             EmailsInvolved,
             Statuses,
             sha,
@@ -217,16 +220,16 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     }
   }
 
-  async function approveTransaction(sha: string) {
+  async function approveTransaction(email:string, sha: string) {
     const contract = await checkAndConnectContract();
-    await contract.approveTransaction(sha);
+    await contract.approveTransaction(email, sha);
   }
 
   async function getContractInfo(sha: string){
-    if (userState.address) {
+    if (userState.isLoggedIn) {
       const contract = await checkAndConnectContract();
       const contractDetails = await contract.getContract(sha);
-      const data = await contract.getContractInfo(sha);
+      const data = await contract.getContractInfo(userState.googleData?.email, sha);
       return [contractDetails, data];
     } else {
       console.log("wallet not connnected");

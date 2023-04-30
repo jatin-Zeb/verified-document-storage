@@ -45,6 +45,7 @@ const UserDocuments = () => {
   const { isLoggedIn } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
+  const [form] = Form.useForm();
   const { kycVerified } = useSelector<StoreState,KYCDocs>(state=>state.kyc)
   const { addContract, getUserContracts, fetchWalletInfo, approveTransaction, getContractInfo } = useContext(
     contractContext
@@ -211,6 +212,56 @@ const UserDocuments = () => {
       method: 'POST',
       body: JSON.stringify(content),
       headers: {'Content-Type': 'application/json'} });
+  }
+
+  const displayRazorPay = async() => {
+    const options = {
+      key: "rzp_test_TF1xnKd4kEZOBk",
+      currency: "INR",
+      amount: 100 * 100,
+      name: "Docusmriti",
+      description: "Pay Online",
+      image:
+        "https://mern-blog-akky.herokuapp.com/static/media/logo.8c649bfa.png",
+
+      handler: function (response: any) {
+        alert(response.razorpay_payment_id);
+        alert("Payment Successfully");
+      },
+      prefill: {
+        name: "User Name",
+        email: "email@gmail.com"
+      },
+      theme: {
+        color: "rgba(48, 118, 224, 1)",
+        backdrop: "#000000"
+      },
+      config: {
+        display: {
+          blocks: {
+            banks: {
+              name: "Pay via these methods",
+              instruments: [
+                {
+                  method: "upi"
+                }, {
+                  method: "card"
+                }, {
+                  method: "netbanking"
+                }
+              ],
+            },
+          },
+          sequence: ['block.banks'],
+          preferences: {
+            show_default_blocks: false,
+          },
+        },
+      },
+    };
+    // @ts-ignore
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   }
 
   return (
@@ -431,21 +482,22 @@ const UserDocuments = () => {
                 theme="withIcon"
               />
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button
-                type="secondary"
-                typeAttribute="submit"
-                onClick={() => {
-                  setOpenDrawer(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button disabled={!(kycVerified===2)} type="primary" typeAttribute="submit" onClick={() => {}}>
-                Submit
-              </Button>
+            <Form.Item wrapperCol={{ flex: "auto" }}>
+              <div css={styles.submitContainer}>
+                <Button
+                  type="secondary"
+                  typeAttribute="submit"
+                  onClick={() => {
+                    displayRazorPay();
+                  }}
+                >
+                  Pay via FIAT
+                </Button>
+                <Button disabled={!(kycVerified===2)} type="primary" typeAttribute="submit" onClick={() => {}}>
+                  Pay via Metamask
+                </Button>
+              </div>
             </Form.Item>
-              <iframe height={500} src={"/payment"} />
           </Form>
         </Spin>
       </Drawer>

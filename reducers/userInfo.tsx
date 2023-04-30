@@ -1,22 +1,25 @@
 import createReducer from "../utils/redux/createReducer";
-import { GoogleLoginData } from "../typings/login";
+import { GoogleLoginData, LoginData } from "../typings/login";
 
 export enum ActionType {
   SET_USER_ADDRESS = "SET_USER_ADDRESS",
   SET_LOGIN = "SET_LOGIN",
-  SET_GOOGLE_DATA = "SET_GOGLE_DATA"
+  SET_GOOGLE_DATA = "SET_GOOGLE_DATA",
+  SET_LOGIN_DATA = "SET_LOGIN_DATA"
 }
 
 export interface UserState {
   isLoggedIn: boolean;
   googleData: GoogleLoginData | null;
   address: string;
+  loginData: LoginData | null;
 }
 
 const initialState: UserState = {
   isLoggedIn: false,
   googleData: null,
-  address: ""
+  address: "",
+  loginData: null
 }
 
 export default createReducer<UserState>(initialState, {
@@ -36,6 +39,12 @@ export default createReducer<UserState>(initialState, {
     return {
       ...state,
       googleData: payload as GoogleLoginData
+    };
+  },
+  [ActionType.SET_LOGIN_DATA](state: UserState, payload: unknown): UserState {
+    return {
+      ...state,
+      loginData: payload as LoginData
     };
   }
 });

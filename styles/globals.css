@@ -22,3 +22,14 @@ body {
   color: #e7e8e8;
   background: #0f1318;
 }
+
+.razorpay-backdrop {
+  background-color: #00F0F810 !important;
+}
+
+.razorpay-container iframe {
+  width: 400px !important;
+  height: 600px !important;
+  top: 10%;
+  left: 35%;
+}

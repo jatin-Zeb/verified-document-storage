@@ -16,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Provider store={store}>
         <ContractHandler>
           <ThirdwebProvider desiredChainId={activeChainId}>
+            <script async src="https://checkout.razorpay.com/v1/checkout.js"></script>
             <Component {...pageProps} />
           </ThirdwebProvider>
         </ContractHandler>

@@ -25,3 +25,14 @@ export interface KycData {
   created_at: string;
   updated_at: string;
 }
+
+export interface KycReqData {
+  first_name: string;
+  last_name: string;
+  dob: string;
+  gender: string;
+  aadhaar_number: string;
+  aadhaar_front_path: string;
+  aadhaar_back_path: string;
+  selfie_path: string;
+}

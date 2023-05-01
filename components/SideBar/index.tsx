@@ -17,6 +17,11 @@ import { SideBarProps } from "./typings";
 import { Button, FloatButton } from "antd";
 import { useCallback } from "react";
 import { useRouter } from "next/router";
+import { StoreState } from "../../reducers";
+
+import { useSelector } from "react-redux";
+import { LoginData } from "../../typings/login";
+import { KYC_STATUS } from "../../reducers/kyc";
 
 const SideBar: React.FC<SideBarProps> = ({
   expand,
@@ -24,13 +29,23 @@ const SideBar: React.FC<SideBarProps> = ({
   selected,
 }) => {
   const router = useRouter();
+  const loginData = useSelector<StoreState, LoginData | null>(
+    (state) => state.user.loginData
+  );
+
   const sideBarTabs = useCallback(() => {
     return [
       { content: "Profile", id: "profile" },
-      { content: "My Docs", id: "docs" },
-      { content: "Setting", id: "setting" },
+      {
+        content: "My Docs",
+        id: "docs",
+        isDisabled: !(
+          loginData && loginData.kyc_status === KYC_STATUS.VERIFIED
+        ),
+      },
+      { content: "Setting", id: "setting", isDisabled: true },
     ];
-  }, []);
+  }, [loginData]);
   return (
     <div css={styles.sideBar(expand)}>
       <div css={styles.iconSpace}>
@@ -76,6 +91,7 @@ const SideBar: React.FC<SideBarProps> = ({
               onClick={() => {
                 router.push(buttonData.id);
               }}
+              disabled={!!buttonData.isDisabled}
             >
               {buttonData.content}
             </Button>

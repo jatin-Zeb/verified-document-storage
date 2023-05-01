@@ -15,25 +15,25 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { KYCDocs } from "../../../reducers/kyc";
+import { UserState } from "../../../reducers/userInfo";
 import { colors, mixins, typography } from "../../../styles1";
 import KycHome from "../../Kyc";
-import Referral from "../../Referral";
 import Button from "../../shared/Button";
-import { contractContext } from "../../UserHome/Contract";
-import { ContractContextType } from "../../UserHome/Contract/context";
 import * as styles from "./styles";
 
 const UserDetails = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("1");
   const [openFinanceDrawer, setOpenFinanceDrawer] = useState<boolean>(false);
+  const { isLoggedIn } = useSelector<StoreState, UserState>(
+    (state) => state.user
+  );
   const [uplodedDocument, setUploadedDocument] = useState<
     Blob | null | undefined
   >();
-  const { kycVerified, kycDocs } = useSelector<StoreState, KYCDocs>(
+  const { kycVerified, kycData } = useSelector<StoreState, KYCDocs>(
     (state) => state.kyc
   );
-  const { getUserKycInfo } = useContext(contractContext) as ContractContextType;
 
   const onFinish = (values: any) => {
     console.log(values);
@@ -52,13 +52,6 @@ const UserDetails = () => {
     return e?.fileList;
   };
 
-  useEffect(() => {
-    console.log(" i m run");
-    (async () => {
-      await getUserKycInfo();
-    })();
-  }, []);
-
   return (
     <div css={styles.userDocuments}>
       <div css={styles.heading}>
@@ -67,7 +60,6 @@ const UserDetails = () => {
         </p>
       </div>
       <Tabs
-        defaultActiveKey="1"
         items={[
           {
             key: "1",
@@ -78,11 +70,12 @@ const UserDetails = () => {
                   <div
                     css={styles.uploadKyc}
                     onClick={() => {
-                      console.log(" i m run");
-                      setActiveTab("2");
+                      setActiveTab("1");
                     }}
                   >
-                    Please Verify Your Kyc . To fill some of the details
+                    {isLoggedIn
+                      ? "Please Verify Your Kyc . To fill some of the details"
+                      : "Please Login to continue..."}
                   </div>
                 )}
                 <div css={styles.tab1Container}>
@@ -104,13 +97,13 @@ const UserDetails = () => {
                         <div css={styles.info}>
                           <div css={styles.infoHead}>First Name</div>
                           <div css={styles.infoSubHead}>
-                            {kycDocs.FirstName || "-"}
+                            {kycData?.first_name || "-"}
                           </div>
                         </div>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>D.O.B</div>
                           <div css={styles.infoSubHead}>
-                            {kycDocs.DOB || "-"}
+                            {kycData?.dob || "-"}
                           </div>
                         </div>
                       </div>
@@ -118,13 +111,13 @@ const UserDetails = () => {
                         <div css={styles.info}>
                           <div css={styles.infoHead}>Last Name</div>
                           <div css={styles.infoSubHead}>
-                            {kycDocs.LastName || "-"}
+                            {kycData?.last_name || "-"}
                           </div>
                         </div>
                         <div css={styles.info}>
                           <div css={styles.infoHead}>Aadhaar No.</div>
                           <div css={styles.infoSubHead}>
-                            {kycDocs.AadhaarNumber || "-"}
+                            {kycData?.aadhaar_number || "-"}
                           </div>
                         </div>
                       </div>
@@ -164,14 +157,16 @@ const UserDetails = () => {
             key: "3",
             label: `KYC`,
             children: <KycHome />,
+            disabled: !isLoggedIn,
           },
           {
             key: "4",
             label: `SAVED ADDRESSES`,
             children: `Content of Tab Pane 1`,
-            disabled: kycVerified !== 2,
+            disabled: kycVerified !== 2 || !isLoggedIn,
           },
         ]}
+        activeKey={activeTab}
         onChange={(activeKey) => {
           setActiveTab(activeKey);
         }}

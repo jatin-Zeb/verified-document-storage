@@ -9,13 +9,22 @@ import metamask from "../../public/images/metamsk.png";
 import google from "../../public/images/google.png";
 import logo_doc from "../../public/images/logo_doc1.png";
 import Image from "next/image";
-import { getLoginDetails, setGoogleLoginData, setIsLoggedIn, setUserAddress } from "../../actions/user";
+import {
+  getLoginDetails,
+  setGoogleLoginData,
+  setIsLoggedIn,
+  setUserAddress,
+} from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
-import { KYCDocs } from "../../reducers/kyc";
+import { KYCDocs, KYC_STATUS } from "../../reducers/kyc";
 import { Tooltip, Modal } from "antd";
-import { googleLogout, useGoogleLogin, TokenResponse } from "@react-oauth/google";
+import {
+  googleLogout,
+  useGoogleLogin,
+  TokenResponse,
+} from "@react-oauth/google";
 import axios from "axios";
 import { fetchKycData } from "../../actions/kyc";
 
@@ -36,56 +45,55 @@ const Header = () => {
     if (sessionToken) {
       setGoogleToken(sessionToken);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (userState.loginData) {
       setIsLoggedIn(true);
-      if (userState.loginData.kyc_status === "verified") {
-        fetchKycData(googleToken)
+      if (userState.loginData.kyc_status === KYC_STATUS.VERIFIED) {
+        fetchKycData(googleToken);
       }
     }
-  },[googleToken, userState.loginData])
+  }, [googleToken, userState.loginData]);
 
-
-    const login = useGoogleLogin({
-      onSuccess: (codeResponse: TokenResponse) => {
-        setOpenModal(false);
-        sessionStorage.setItem("google_token", codeResponse.access_token);
-        setGoogleToken(codeResponse.access_token);
-      },
-      onError: (error) => console.log('Login Failed:', error)
-    });
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse: TokenResponse) => {
+      setOpenModal(false);
+      sessionStorage.setItem("google_token", codeResponse.access_token);
+      setGoogleToken(codeResponse.access_token);
+    },
+    onError: (error) => console.log("Login Failed:", error),
+  });
   const logOut = () => {
     googleLogout();
     setGoogleLoginData(null);
     getLoginDetails("");
-    };
+  };
 
-  useEffect(
-        () => {
-            if (googleToken) {
-                axios
-                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleToken}`, {
-                        headers: {
-                            Authorization: `Bearer ${googleToken}`,
-                            Accept: 'application/json'
-                        }
-                    })
-                    .then((res) => {
-                      getLoginDetails(googleToken).then(() => {
-                        setGoogleLoginData(res.data);
-                      });
-                    })
-                  .catch((err) => {
-                    console.log("error in api", err);
-                    sessionStorage.removeItem("google_token");
-                  });
-            }
-        },
-        [ googleToken ]
-  );
-  
+  useEffect(() => {
+    if (googleToken) {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleToken}`,
+          {
+            headers: {
+              Authorization: `Bearer ${googleToken}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          getLoginDetails(googleToken).then(() => {
+            setGoogleLoginData(res.data);
+          });
+        })
+        .catch((err) => {
+          console.log("error in api", err);
+          sessionStorage.removeItem("google_token");
+        });
+    }
+  }, [googleToken]);
+
   const accountChangedHandler = (newAccount: any) => {
     if (newAccount) {
       setDefaultAccount(String(newAccount));
@@ -102,7 +110,7 @@ const Header = () => {
   useEffect(() => {
     if (!userState.isLoggedIn) {
       if (pathName !== "/" && pathName !== "/aboutUs") {
-        router.push("/");
+        // router.push("/");
       }
     }
 
@@ -226,9 +234,8 @@ const Header = () => {
                 </span>
               )}
             </div>
-          ) : profile
-              ?
-              <div css={styles.address}>
+          ) : profile ? (
+            <div css={styles.address}>
               <Image
                 src={profile.picture}
                 width={30}
@@ -257,7 +264,7 @@ const Header = () => {
                       setUserAddress("");
                       setSignOutVisible(false);
                       setGoogleLoginData(null);
-                      sessionStorage.removeItem("google_token")
+                      sessionStorage.removeItem("google_token");
                       logOut();
                     }}
                   >
@@ -265,10 +272,11 @@ const Header = () => {
                   </div>
                 </span>
               )}
-            </div> : (
+            </div>
+          ) : (
             <Button
               type="link"
-                onClick={() => setOpenModal(true)}
+              onClick={() => setOpenModal(true)}
               style={styles.buttonStyle}
             >
               Login
@@ -284,12 +292,12 @@ const Header = () => {
         width={300}
       >
         <div>
-          <div onClick={()=>login()} css={styles.loginOptionContainer}>
+          <div onClick={() => login()} css={styles.loginOptionContainer}>
             <Image css={styles.loginImg} src={google} alt="" width={20} />
             <div css={styles.loginTitle}>Google</div>
           </div>
         </div>
-      </Modal> 
+      </Modal>
     </div>
   );
 };

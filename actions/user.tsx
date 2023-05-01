@@ -2,6 +2,9 @@ import actionCreator from "../utils/redux/actionCreator";
 import { Dispatch } from "../utils/redux/dispatch";
 import { ActionType } from "../reducers/userInfo";
 import { GoogleLoginData } from "../typings/login";
+import axios from "axios";
+
+const BASE_URL = "https://frightened-hen-waders.cyclic.app";
 
 export const setUserAddress = (address: string) => {
   actionCreator(
@@ -35,6 +38,31 @@ export const setGoogleLoginData = (data: GoogleLoginData | null) => {
         type: ActionType.SET_GOOGLE_DATA,
         payload: data
       })
+    }
+  )
+}
+
+export const getLoginDetails = async (token: string) => {
+  actionCreator(
+    "setLoginData",
+    async (dispatch: Dispatch): Promise<void> => {
+      try {
+        const response = await axios(BASE_URL + "/login", {
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          method: "POST"
+        })
+        dispatch({
+          type: ActionType.SET_LOGIN_DATA,
+          payload: response.data.data
+        })
+      } catch (e) {
+        dispatch({
+          type: ActionType.SET_LOGIN_DATA,
+          payload: null
+        })
+      }
     }
   )
 }

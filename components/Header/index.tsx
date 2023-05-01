@@ -9,7 +9,7 @@ import metamask from "../../public/images/metamsk.png";
 import google from "../../public/images/google.png";
 import logo_doc from "../../public/images/logo_doc1.png";
 import Image from "next/image";
-import { setGoogleLoginData, setIsLoggedIn, setUserAddress } from "../../actions/user";
+import { getLoginDetails, setGoogleLoginData, setIsLoggedIn, setUserAddress } from "../../actions/user";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
@@ -17,6 +17,7 @@ import { KYCDocs } from "../../reducers/kyc";
 import { Tooltip, Modal } from "antd";
 import { googleLogout, useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import axios from "axios";
+import { fetchKycData } from "../../actions/kyc";
 
 const Header = () => {
   const router = useRouter();
@@ -24,9 +25,6 @@ const Header = () => {
   const [defaultAccount, setDefaultAccount] = useState("");
   const [signoutVisible, setSignOutVisible] = useState(false);
   const userState = useSelector<StoreState, UserState>((state) => state.user);
-  const { addContract, getUserContracts, fetchWalletInfo } = useContext(
-    contractContext
-  ) as ContractContextType;
   const { kycVerified } = useSelector<StoreState, KYCDocs>(
     (state) => state.kyc
   );
@@ -40,6 +38,15 @@ const Header = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (userState.loginData) {
+      setIsLoggedIn(true);
+      if (userState.loginData.kyc_status === "verified") {
+        fetchKycData(googleToken)
+      }
+    }
+  },[googleToken, userState.loginData])
+
 
     const login = useGoogleLogin({
       onSuccess: (codeResponse: TokenResponse) => {
@@ -52,6 +59,7 @@ const Header = () => {
   const logOut = () => {
     googleLogout();
     setGoogleLoginData(null);
+    getLoginDetails("");
     };
 
   useEffect(
@@ -65,8 +73,9 @@ const Header = () => {
                         }
                     })
                     .then((res) => {
-                      setGoogleLoginData(res.data);
-                      setIsLoggedIn(true);
+                      getLoginDetails(googleToken).then(() => {
+                        setGoogleLoginData(res.data);
+                      });
                     })
                   .catch((err) => {
                     console.log("error in api", err);
@@ -278,12 +287,6 @@ const Header = () => {
           <div onClick={()=>login()} css={styles.loginOptionContainer}>
             <Image css={styles.loginImg} src={google} alt="" width={20} />
             <div css={styles.loginTitle}>Google</div>
-          </div>
-        </div>
-        <div>
-          <div css={styles.loginOptionContainer} onClick={connectWalletHandler}>
-            <Image css={styles.loginImg} src={metamask} alt="" width={20} />
-            <div css={styles.loginTitle}>Metamask</div>
           </div>
         </div>
       </Modal> 

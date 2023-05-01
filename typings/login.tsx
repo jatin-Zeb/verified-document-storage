@@ -10,3 +10,13 @@ export interface GoogleLoginData {
   picture: string;
   verified_email: boolean;
 }
+
+export interface LoginData {
+  created_at: string;
+  email: string;
+  id: number;
+  is_active: boolean;
+  kyc_status: string;
+  name: string;
+  updated_at: string;
+}

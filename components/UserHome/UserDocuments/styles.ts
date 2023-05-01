@@ -52,3 +52,13 @@ export const cross = css({
   top: 10,
   cursor: "pointer"
 })
+
+export const submitContainer = css({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "space-around",
+  gap: 8,
+  button: {
+    flex: 1
+  }
+})

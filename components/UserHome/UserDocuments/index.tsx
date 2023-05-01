@@ -56,12 +56,10 @@ const UserDocuments = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<{
     emailsInvolved: string[],
-    statuses: boolean[],
-    addressesInvolved: string[]
+    statuses: boolean[]
   }>({
     emailsInvolved: [],
-    statuses: [],
-    addressesInvolved: []
+    statuses: []
   });
   const connectToWallet = async () => {
     await fetchWalletInfo();
@@ -83,11 +81,10 @@ const UserDocuments = () => {
     }
   }, [isLoggedIn, contactHandler]);
 
-  const setModal = (EmailsInvolved:string[], statuses: boolean[], AddressesInvolved: string[] ) => {
+  const setModal = (EmailsInvolved:string[], statuses: boolean[] ) => {
     setModalData({
       emailsInvolved: EmailsInvolved,
-      statuses: statuses,
-      addressesInvolved: AddressesInvolved
+      statuses: statuses
     })
   }
 
@@ -109,11 +106,11 @@ const UserDocuments = () => {
             View
           </a>
           {tab === "pending" && <Button type="blue" onClick={() => {
-            approveTransaction(data.sha);
+            approveTransaction("email@gmail.com", data.sha); //@TODO: add signed in user email here
          }}>Approve</Button>}
           <Popover content={<div style={{cursor: "pointer"}} onClick={() => {
             setModalOpen(true);
-            setModal(data.EmailsInvolved, data.Statuses, data.AddressesInvolved);
+            setModal(data.EmailsInvolved, data.Statuses);
           }}>View Participants</div>} >
             <MoreOutlined style={{cursor: "pointer"}} />
           </Popover>
@@ -182,7 +179,6 @@ const UserDocuments = () => {
           currentTime.toLocaleString(),
           sha256,
           metadata.url,
-          walletArray,
           emailArray
         );
 
@@ -509,19 +505,15 @@ const UserDocuments = () => {
       >
         <div css={styles.participants}>
           <React.Fragment>
-            <span style={{gridRow: "1/3", fontWeight: "700"}}> Address</span>
-            <span style={{gridRow:"1/3",fontWeight: "700", paddingBottom: "10px"}}>Email</span>
-            <span style={{gridRow: "1/3", fontWeight: "700"}}>Status</span>
+            <span style={{gridRow:"1/2",fontWeight: "700", paddingBottom: "10px"}}>Email</span>
+            <span style={{gridRow: "1/2", fontWeight: "700"}}>Status</span>
           </React.Fragment>
           {
             modalData.emailsInvolved.map((val, key) => {
               return <React.Fragment key={key}>
-                <Popover content={modalData.addressesInvolved[key]}>
-                  <span>{modalData.addressesInvolved[key].slice(0, 5)}...{modalData.addressesInvolved[key].slice(38, 42)}</span>
-                </Popover>
                 <span>{val}</span>
                 <span style={{paddingBottom: "10px"}}>
-                  <Tag color={modalData.statuses[key] ? "green" : "gold"}>{modalData.statuses[key] ? "SIGNED" : "PENDING"}</Tag>
+                <Tag color={modalData.statuses[key] ? "green" : "gold"}>{modalData.statuses[key] ? "SIGNED" : "PENDING"}</Tag>
                 </span>
               </React.Fragment>
             })

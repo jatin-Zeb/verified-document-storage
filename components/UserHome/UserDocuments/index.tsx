@@ -25,16 +25,18 @@ import { MoreOutlined, UploadOutlined } from "@ant-design/icons";
 import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 import Button from "../../shared/Button";
-import { setUserDocs } from "../../../actions/docs";
+import { addNewContract, setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
-import { Document } from "../../../typings/docs";
+import { Document, NewDoc } from "../../../typings/docs";
 import { MPC, UploadedDocsProps } from "../../../reducers/docs";
 import { UserState } from "../../../reducers/userInfo";
 import { KYCDocs } from "../../../reducers/kyc";
 import crossImg from "../../../public/icons/cross.png";
 import Image from "next/image";
 import VerifyDoc from "../VerifyDoc";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -43,7 +45,8 @@ const UserDocuments = () => {
   const { all, signed, pending } = useSelector<StoreState, UploadedDocsProps>(
     (state) => state.docs.uploadedDocs
   );
-  const { isLoggedIn } = useSelector<StoreState, UserState>(
+  const [submitButton, setSubmitButton] = useState("");
+  const { isLoggedIn, loginData } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
   const [form] = Form.useForm();
@@ -184,13 +187,30 @@ const UserDocuments = () => {
         console.log("SHA256 of File :=> ", sha256);
         const currentTime = new Date();
         const emailArray: string[] = [];
-        const walletArray: string[] = [];
         for (var i = 1; i <= participantsLength; i++) {
           emailArray.push(values["emailAddress" + String(i)]);
-          walletArray.push(values["walletAddress" + String(i)]);
         }
         // const imageUrl = await getImageUrlFromMetaData(metadata.url)
-        await addContract(
+        if (submitButton === "Fiat") {
+          const uploadData: NewDoc = {
+            category: values.Category,
+            description: values.Description,
+            name: values.Name,
+            start_date: values.DateRange[0]["$d"].toLocaleString(),
+            end_date: values.DateRange[1]["$d"].toLocaleString(),
+            sha256: sha256,
+            ipfsUrl: metadata.url,
+            inviteEmails: emailArray
+          }
+          const googleToken = sessionStorage.getItem("google_token");
+          if (googleToken) {
+            displayRazorPay(uploadData, setLoading)
+          } else {
+            alert("PLEASE LOG IN");
+            setLoading(false);
+          }
+        } else {
+          await addContract(
           values.Category || "",
           values.Description || "",
           values.Name || "",
@@ -201,11 +221,13 @@ const UserDocuments = () => {
           sha256,
           metadata.url,
           emailArray
-        );
+          );
+          setLoading(false);
+        }
 
         // await loadMyDocuments();
         // await populateUseDocuments();
-        setLoading(false);
+        
         //TODO: set loading state to be false here
         messageApi.success("Uploaded Successfully ");
         message.info("List will be updated in a few minutes");
@@ -216,7 +238,7 @@ const UserDocuments = () => {
     } catch (error) {
       setLoading(false);
       messageApi.error("Failed to Upload");
-      console.error(error);
+      console.error(error, "ERROR UPLOADING");
     }
   };
   async function sendEmail(email: string) {
@@ -235,7 +257,7 @@ const UserDocuments = () => {
     );
   }
 
-  const displayRazorPay = async () => {
+  const displayRazorPay = async (data: NewDoc, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
     const options = {
       key: "rzp_test_TF1xnKd4kEZOBk",
       currency: "INR",
@@ -245,9 +267,15 @@ const UserDocuments = () => {
       image:
         "https://mern-blog-akky.herokuapp.com/static/media/logo.8c649bfa.png",
 
-      handler: function(response: any) {
-        alert(response.razorpay_payment_id);
-        alert("Payment Successfully");
+      handler: async function (response: any) {
+        const googleToken = sessionStorage.getItem("google_token");
+        if (googleToken) {
+          const resp = await addNewContract(data, googleToken);
+          if (resp) {
+            setLoading(false);
+            toast("Contract Uploaded Successfully")
+          }
+        }
       },
       prefill: {
         name: "User Name",
@@ -453,6 +481,7 @@ const UserDocuments = () => {
             style={{ maxWidth: 600 }}
             initialValues={{ remember: true }}
             onFinish={onFinish}
+            form={form}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
             layout="vertical"
@@ -468,6 +497,8 @@ const UserDocuments = () => {
             <Form.Item
               label="Email"
               name="Email"
+              preserve={true}
+              initialValue={loginData?.email}
               rules={[
                 {
                   required: true,
@@ -478,13 +509,13 @@ const UserDocuments = () => {
             >
               <Input />
             </Form.Item>
-            <Form.Item name="DateRange" label="Contract Validity Date">
+            <Form.Item name="DateRange" label="Contract Validity Date" rules={[{ required: true, message: "Select date range!" }]}>
               <DatePicker.RangePicker />
             </Form.Item>
-            <Form.Item label="Category" name="Category">
+            <Form.Item label="Category" name="Category" rules={[{ required: true, message: "Enter Category" }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="Description" label="Description">
+            <Form.Item name="Description" label="Description" rules={[{ required: true, message: "Enter Description" }]}>
               <Input.TextArea rows={4} />
             </Form.Item>
             {[...Array(participantsLength)].map((val, key) => (
@@ -507,15 +538,6 @@ const UserDocuments = () => {
                   ]}
                   label={`Email Address ${key + 1}`}
                   name={`emailAddress${key + 1}`}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  rules={[
-                    { required: true, message: "Please input your Address!" },
-                  ]}
-                  label={`Wallet Address ${key + 1}`}
-                  name={`walletAddress${key + 1}`}
                 >
                   <Input />
                 </Form.Item>
@@ -543,26 +565,23 @@ const UserDocuments = () => {
                 <Button
                   type="secondary"
                   typeAttribute="submit"
-                  onClick={() => {
-                    displayRazorPay();
-                  }}
+                  onClick={() => setSubmitButton("Fiat")}
                 >
                   Pay via FIAT
                 </Button>
                 <Button
-                  disabled={!(kycVerified === 2) || !isLoggedIn}
                   type="primary"
                   typeAttribute="submit"
-                  onClick={() => {}}
+                  onClick={() => setSubmitButton("Metamask")}
                 >
                   Pay via Metamask
                 </Button>
               </div>
             </Form.Item>
-            <iframe height={500} src={"/payment"} />
           </Form>
         </Spin>
       </Drawer>
+      <ToastContainer position="bottom-left" />
       <Modal
         open={modalOpen}
         onCancel={() => setModalOpen(false)}

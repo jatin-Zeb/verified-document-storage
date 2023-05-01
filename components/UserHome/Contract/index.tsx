@@ -119,26 +119,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   }
 
   async function getUserContracts() {
-    getAllUserContracts();
-    if (userState.isLoggedIn) {
-      const contract = await checkAndConnectContract();
-
-      const contractSHA = await contract.getContractbyCreator(
-        userState.googleData?.email
-      );
-
-      var result: Document[] = [];
-      for (var i = 0; i < contractSHA.length; i++) {
-        const res: Document = await contract.getContract(contractSHA[i]);
-        result.push(res);
-      }
-      return result;
-    } else {
-      return [];
-    }
-  }
-
-  async function getAllUserContracts() {
     if (userState.isLoggedIn) {
       const contract = await checkAndConnectContract();
       var allSigned = [];
@@ -223,7 +203,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         getUserContracts,
         addUserKycInfo,
         approveTransaction,
-        getAllUserContracts,
         getContractInfo,
       }}
     >

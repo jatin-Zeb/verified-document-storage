@@ -9,3 +9,14 @@ export interface Document {
   StartDate: string;
   length: number;
 }
+
+export interface NewDoc {
+  category: string;
+  description: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+  sha256: string;
+  ipfsUrl: string;
+  inviteEmails: string[];
+}

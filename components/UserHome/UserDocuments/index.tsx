@@ -214,7 +214,7 @@ const UserDocuments = () => {
           values.Category || "",
           values.Description || "",
           values.Name || "",
-          values.Email || "",
+          values.Email || "", // ADD GOOGLE EMAIL HERE @TODO
           values.DateRange[0]["$d"].toLocaleString() || "",
           values.DateRange[1]["$d"].toLocaleString() || "",
           currentTime.toLocaleString(),
@@ -248,7 +248,7 @@ const UserDocuments = () => {
       subject: "Signature Needed in Contract",
     };
     const response = await fetch(
-      "https://shiny-bathing-suit-slug.cyclic.app/sendMail",
+      "https://frightened-hen-waders.cyclic.app/mail/send",
       {
         method: "POST",
         body: JSON.stringify(content),

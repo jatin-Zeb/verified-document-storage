@@ -15,6 +15,8 @@ import { StoreState } from "../../../reducers";
 import { UserState } from "../../../reducers/userInfo";
 import { useRouter } from "next/router";
 export const contractContext = createContext<ContractContextType | null>(null);
+
+const rpcProvider = new ethers.providers.JsonRpcProvider("https://eth-sepolia.g.alchemy.com/v2/n4yLaiI4besVGa-VK5rIPefdWiUznMJL");
 interface Props {
   children: React.ReactNode;
 }
@@ -26,7 +28,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const fetchWalletInfo = async () => {
     try {
-      if (typeof window !== "undefined") {
+      if (window.ethereum !== undefined) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
         setUserAddress(accounts[0]);
@@ -35,29 +37,39 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         });
         setIsLoggedIn(true);
 
-        // return true;
+        return true;
       } else {
+        alert("No metamask installed!!")
         setIsLoggedIn(false);
-        // return false;
+        return false;
       }
     } catch (e) {
       setIsLoggedIn(false);
-      // return false;
+      return false;
     }
   };
 
   const checkAndConnectContract = async () => {
-    if (!contract && typeof window !== "undefined") {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+    if (!contract) {
       const tempContract = new ethers.Contract(
         contractAddress["5"][0],
         abi,
-        provider.getSigner()
+        rpcProvider
       );
       setContract(tempContract);
       return tempContract;
     }
     return contract;
+  };
+
+  const checkAndConnectContractWithSigner = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const tempContract = new ethers.Contract(
+      contractAddress["5"][0],
+      abi,
+      provider.getSigner()
+    );
+    return tempContract;
   };
 
   async function addContract(
@@ -72,12 +84,16 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     IPFSUri: string,
     InvitesEmail: string[]
   ) {
-    const contract = await checkAndConnectContract();
+    const isWalletConnected = await fetchWalletInfo()
+    if(!isWalletConnected){
+      return
+    }
+    const contract = await checkAndConnectContractWithSigner();
     await contract.addContract(
       category,
       description,
       name,
-      email,
+      userState.googleData?.email,
       startDate,
       endDate,
       createDate,
@@ -124,7 +140,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       var allSigned = [];
       var signed = [];
       var pending = [];
-
+  
       const createdContractSha = await contract.getContractbyCreator(
         userState.googleData?.email
       );
@@ -132,7 +148,8 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         userState.googleData?.email
       );
       const SHAs = createdContractSha.concat(contractShaArray);
-
+      console.log(SHAs);
+        
       for (var i = 0; i < SHAs.length; i++) {
         const sha = SHAs[i];
         const contractDetails = await contract.getContract(sha);
@@ -168,7 +185,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
           });
         }
       }
-
+      
       setUserDocs({ all: allSigned, signed, pending });
     } else {
       console.log("wallet not connnected");
@@ -176,8 +193,12 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   }
 
   async function approveTransaction(email: string, sha: string) {
-    const contract = await checkAndConnectContract();
-    await contract.approveTransaction(email, sha);
+    const isWalletConnected = await fetchWalletInfo()
+    if(!isWalletConnected){
+      return
+    }
+    const contract = await checkAndConnectContractWithSigner();
+    await contract.approveTransaction(userState.googleData?.email, sha);
   }
 
   async function getContractInfo(sha: string) {

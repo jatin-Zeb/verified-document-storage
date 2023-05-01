@@ -26,7 +26,7 @@ export type ContractContextType = {
   ) => {};
   getContract: (IPFSUri: string) => any;
   getUserContracts: () => {};
-  fetchWalletInfo: () => Promise<void>;
+  fetchWalletInfo: () => Promise<boolean>;
   approveTransaction: (email: string, sha: string) => any;
   getContractInfo: (sha: string) => any;
 };

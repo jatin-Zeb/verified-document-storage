@@ -19,28 +19,10 @@ const LandingPage: React.FC = () => {
   const { kycVerified } = useSelector<StoreState, KYCDocs>(
     (state) => state.kyc
   );
-  const { fetchWalletInfo, getUserKycInfo } = useContext(
-    contractContext
-  ) as ContractContextType;
 
-  const { isLoggedIn } = useSelector<StoreState, UserState>(
-    (state) => state.user
-  );
-  // useEffect(() => {
-  //   fetchWalletInfo();
-  // }, []);
-  useEffect(() => {
-    console.log(isLoggedIn);
-    if (isLoggedIn) {
-      (async () => {
-        await getUserKycInfo();
-      })();
-    }
-  }, [isLoggedIn]);
   const accountChangedHandler = (newAccount: any) => {
     if (newAccount) {
       setUserAddress(String(newAccount));
-      // setIsLoggedIn(true);
     } else sessionStorage.clear();
   };
 

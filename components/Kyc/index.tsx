@@ -1,19 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import * as styles from "./styles";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { DatePicker, Form, Input, Select, Steps, Typography } from "antd";
 import Button from "../shared/Button";
 import { colors, mixins } from "../../styles1";
 import UploadAadhar from "./UploadAadhar";
 import AddSelfie from "./AddSelfie";
-import { ContractContextType } from "./../UserHome/Contract/context";
-import { contractContext } from "./../UserHome/Contract";
 import Image from "next/image";
 import verification_success from "../../public/icons/verification_success.png";
 import { StoreState } from "../../reducers";
 import { useSelector } from "react-redux";
 import { KYCDocs } from "../../reducers/kyc";
 import { UserState } from "../../reducers/userInfo";
+import { KycData, KycReqData } from "../../typings/kycDocs";
+import { uploadKycDetails } from "../../actions/kyc";
+import { useRouter } from "next/router";
 
 export enum KycPage {
   KycForm,
@@ -39,18 +40,15 @@ const KycHome: React.FC = () => {
   const [step, setStep] = useState<number>(0);
   const [selfie, setSelfie] = useState("");
   const [loading, setLoading] = useState(false);
-  const { kycDocs } = useSelector<StoreState, KYCDocs>((state) => state.kyc);
+  const { kycData } = useSelector<StoreState, KYCDocs>((state) => state.kyc);
   const { isLoggedIn } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
-
+  const router = useRouter();
   const [aadhar, setAadhar] = useState<Aadhar>({
     front: {} as FileList,
     back: {} as FileList,
   });
-  const { addUserKycInfo, getUserKycInfo, fetchWalletInfo } = useContext(
-    contractContext
-  ) as ContractContextType;
 
   const [kycDetails, setKycDetails] = useState<KycDetails>({
     firstName: "",
@@ -78,21 +76,22 @@ const KycHome: React.FC = () => {
 
   const onKYCDetailsSubmit = async () => {
     const addKYC = async () => {
-      await addUserKycInfo(
-        kycDetails.firstName,
-        kycDetails.lastName,
-        kycDetails.gender,
-        kycDetails.dob,
-        kycDetails.aadhaarNumber,
-        "FRONTURL",
-        "BACKURL",
-        "SELFIEURL",
-        kycDetails.createDate
-      );
-    }
+      const googleToken = sessionStorage.getItem("google_token");
+      const reqData: KycReqData = {
+        first_name: kycDetails.firstName,
+        last_name: kycDetails.lastName,
+        dob: kycDetails.dob,
+        gender: kycDetails.gender,
+        aadhaar_number: kycDetails.aadhaarNumber,
+        aadhaar_front_path: "FRONTURL",
+        aadhaar_back_path: "BACKURL",
+        selfie_path: "SELFIEURL",
+      };
+      if (googleToken) uploadKycDetails(googleToken, reqData);
+    };
     addKYC().then(() => {
       setStep(step + 1);
-    })
+    });
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -252,7 +251,9 @@ const KycHome: React.FC = () => {
             <div css={{ marginTop: "100px" }}>
               <Button
                 type="secondary"
-                onClick={() => {}}
+                onClick={() => {
+                  router.push("/docs");
+                }}
                 typeAttribute="submit"
               >
                 DONE
@@ -265,7 +266,7 @@ const KycHome: React.FC = () => {
   }, [step, aadhar, selfie]);
   return (
     <div css={styles.addKyc}>
-      {kycDocs && kycDocs.AadhaarNumber.length ? (
+      {kycData && kycData.aadhaar_number.length ? (
         <div
           css={{
             background: colors.Zeb_BG_Light_Blue,
@@ -281,7 +282,7 @@ const KycHome: React.FC = () => {
             }}
           >
             <div css={styles.heading}>First Name:</div>{" "}
-            <Typography.Text>{kycDocs.FirstName}</Typography.Text>
+            <Typography.Text>{kycData.first_name}</Typography.Text>
           </div>
           <div
             css={{
@@ -290,7 +291,7 @@ const KycHome: React.FC = () => {
             }}
           >
             <div css={styles.heading}>Last Name:</div>{" "}
-            <Typography.Text>{kycDocs.LastName}</Typography.Text>
+            <Typography.Text>{kycData.last_name}</Typography.Text>
           </div>
           <div
             css={{
@@ -299,7 +300,7 @@ const KycHome: React.FC = () => {
             }}
           >
             <div css={styles.heading}>D.O.B:</div>{" "}
-            <Typography.Text>{kycDocs.DOB}</Typography.Text>
+            <Typography.Text>{kycData.dob}</Typography.Text>
           </div>
           <div
             css={{
@@ -309,7 +310,7 @@ const KycHome: React.FC = () => {
           >
             <div css={styles.heading}>Aadhaar No : </div>{" "}
             <Typography.Text css={{ marginRight: "20px" }}>
-              {kycDocs.AadhaarNumber}{" "}
+              {kycData.aadhaar_number}{" "}
             </Typography.Text>
             {/* <Button type="link" size="small" onClick={() => {}}>
               View

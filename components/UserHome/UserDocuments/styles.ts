@@ -19,39 +19,39 @@ export const heading = css({
 export const contractCount = css({
   borderRadius: "10px",
   padding: "2px 7px",
-  backgroundColor: "rgb(135, 206, 235, 0.5)"
+  backgroundColor: "rgb(135, 206, 235, 0.5)",
 });
 
 export const participants = css({
-  display: "grid"
+  display: "grid",
 });
 
 export const truncate = css({
   width: "200px",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
-  overflow: "hidden"
+  overflow: "hidden",
 });
 export const addParticipant = css({
   ...typography.B6_12_semibold,
   color: colors.Zeb_Solid_Bright_Blue,
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 export const participantInput = css({
   background: colors.Zeb_Transparent_4,
   padding: "10px",
   borderRadius: "8px",
   position: "relative",
-  marginBottom: "20px"
-})
+  marginBottom: "20px",
+});
 
 export const cross = css({
   position: "absolute",
   right: 10,
   top: 10,
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 export const submitContainer = css({
   display: "flex",
@@ -59,6 +59,18 @@ export const submitContainer = css({
   justifyContent: "space-around",
   gap: 8,
   button: {
-    flex: 1
-  }
-})
+    flex: 1,
+  },
+});
+
+export const uploadKyc = css({
+  ...typography.B5_14_semibold,
+  margin: "16px 0px",
+  marginTop: "-4px",
+  padding: "8px 10px",
+  background: colors.Zeb_BG_Light_Blue,
+  borderRadius: "20px",
+  color: colors.Zeb_Solid_Blue,
+  cursor: "pointer",
+  border: `1px solid ${colors.Zeb_BG_Light_Blue} `,
+});

@@ -100,10 +100,8 @@ const VerifyDoc: React.FC = () => {
             {docsFound?.[1][0].map((val, key) => {
               return <div key={key} css={styles.participantDetails}>
               <div css={styles.name}>
-                  <div>{docsFound?.[1][1][key]}</div>
-                  <Popover content={val}>
-                    <div>{val.slice(0, 5)}...{val.slice(38,42)}</div>
-                  </Popover>
+                <div>{docsFound?.[1][1][key]}</div>
+                <div>{val}</div>
               </div>
               <div css={styles.status}>
                   <Tag color={docsFound?.[1][2][key] ? "green" : "gold"}>{docsFound?.[1][2][key] ?"SIGNED":"PENDING"}</Tag>

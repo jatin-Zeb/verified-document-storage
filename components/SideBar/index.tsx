@@ -39,13 +39,10 @@ const SideBar: React.FC<SideBarProps> = ({
       {
         content: "My Docs",
         id: "docs",
-        isDisabled: !(
-          loginData && loginData.kyc_status === KYC_STATUS.VERIFIED
-        ),
       },
       { content: "Setting", id: "setting", isDisabled: true },
     ];
-  }, [loginData]);
+  }, []);
   return (
     <div css={styles.sideBar(expand)}>
       <div css={styles.iconSpace}>

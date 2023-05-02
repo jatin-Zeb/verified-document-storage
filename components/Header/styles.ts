@@ -117,3 +117,7 @@ export const loginTitle = css({
   display: "flex",
   justifyContent: "center"
 })
+
+export const walletAddress = css({
+  fontSize: 14
+})

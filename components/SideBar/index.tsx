@@ -4,12 +4,8 @@ import {
   MenuOutlined,
   SettingFilled,
   FileTextOutlined,
-  UserOutlined,
-  CheckCircleOutlined,
   SettingOutlined,
   FileTextFilled,
-  QqOutlined,
-  QqCircleFilled,
   RobotOutlined,
   RobotFilled,
 } from "@ant-design/icons";
@@ -21,7 +17,6 @@ import { StoreState } from "../../reducers";
 
 import { useSelector } from "react-redux";
 import { LoginData } from "../../typings/login";
-import { KYC_STATUS } from "../../reducers/kyc";
 
 const SideBar: React.FC<SideBarProps> = ({
   expand,
@@ -29,9 +24,6 @@ const SideBar: React.FC<SideBarProps> = ({
   selected,
 }) => {
   const router = useRouter();
-  const loginData = useSelector<StoreState, LoginData | null>(
-    (state) => state.user.loginData
-  );
 
   const sideBarTabs = useCallback(() => {
     return [

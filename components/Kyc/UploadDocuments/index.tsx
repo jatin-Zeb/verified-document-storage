@@ -1,11 +1,8 @@
-import { Button, Input, Upload } from "@web3uikit/core";
-import { Formik, FormikValues } from "formik";
+import { Button, Upload } from "@web3uikit/core";
 
 interface UploadDocumentsProps {}
 const UploadDocuments: React.FC<UploadDocumentsProps> = ({}) => {
-  const handleSubmit = () => {
-    console.log("no error can submit");
-  };
+  const handleSubmit = () => {};
   return (
     <div>
       <div style={{ display: "flex" }}>

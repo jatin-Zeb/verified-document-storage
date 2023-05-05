@@ -1,14 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import {Upload } from "@web3uikit/core";
-import {Form,Button as AntButton, Badge, Drawer} from "antd";
+import {Form, Badge, Drawer} from "antd";
 import type { NextPage } from "next";
 import { useEffect, useState, useContext } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
-import UserProfile from "../components/UserProfile";
-import Image from "next/image";
-import linkImage from "../public/icons/external-link.svg";
 import Button from "../components/shared/Button";
 import { blobToSHA256 } from "file-to-sha256";
 import { ContractContextType } from "../components/UserHome/Contract/context";
@@ -22,18 +19,16 @@ const Verify: NextPage = () => {
   const [showState, setShowState] = useState(false);
 
 
-  const { getContract , fetchWalletInfo } = useContext(
+  const { getContract} = useContext(
     contractContext
   ) as ContractContextType;
 
   const onFinish = (values: any) => {
-    // console.log("Details Submitted For Upload:", values);
     verifyDoc(values);
   };
 
  const verifyDoc = async (values: any) => {
   const sha256 = await blobToSHA256(uplodedDocument);
-//   console.log("SHA256 of File :=> ", sha256);
   const docDetails = await getContract(sha256);
    if (docDetails) {
      setShowState(true);
@@ -42,17 +37,15 @@ const Verify: NextPage = () => {
  }
 
   const onFinishFailed = (errorInfo: any) => {
-    // console.log("Failed:", errorInfo);
+
   };
 
-    useEffect(()=>{
-        //call user api to check if logged in
-        //call api for stored document when user is successful
+  useEffect(()=>{
+      //call user api to check if logged in
+      //call api for stored document when user is successful
 
-    })
-const handleUpload= ()=>{
+  })
 
-}
   return (
     <div style={{height:"100vh", background:"#F5F5F5"}}>
         <div css={{display:"flex"}}>

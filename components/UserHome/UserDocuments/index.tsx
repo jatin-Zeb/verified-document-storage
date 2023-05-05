@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Badge, Tab, Table, TabList, Upload } from "@web3uikit/core";
+import { Table, Upload } from "@web3uikit/core";
 import {
   Drawer,
   Form,
@@ -25,10 +25,10 @@ import { MoreOutlined, UploadOutlined } from "@ant-design/icons";
 import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 import Button from "../../shared/Button";
-import { addNewContract, setUserDocs } from "../../../actions/docs";
+import { addNewContract } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
-import { Document, NewDoc } from "../../../typings/docs";
+import { NewDoc } from "../../../typings/docs";
 import { MPC, UploadedDocsProps } from "../../../reducers/docs";
 import { UserState } from "../../../reducers/userInfo";
 import { KYCDocs, KYC_STATUS } from "../../../reducers/kyc";
@@ -114,7 +114,13 @@ const UserDocuments = () => {
             View
           </a>
           {tab === "pending" && (
-            <Popover content={"Please complete your kyc"}>
+            <Tooltip
+              title={
+                loginData && loginData.kyc_status === KYC_STATUS.NOT_VERIFIED
+                  ? "Please complete your kyc"
+                  : ""
+              }
+            >
               <AntButton
                 type="primary"
                 shape="round"
@@ -125,7 +131,7 @@ const UserDocuments = () => {
               >
                 Approve
               </AntButton>
-            </Popover>
+            </Tooltip>
           )}
           <Popover
             content={
@@ -150,14 +156,11 @@ const UserDocuments = () => {
   };
 
   const onFinish = (values: any) => {
-    console.log("Details Submitted For Upload:", values);
     setLoading(true);
     uploadDocToIPFS(values);
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo: any) => {};
 
   async function getImageUrlFromMetaData(IPFSUri: string) {
     IPFSUri = IPFSUri.replace("ipfs://", "https://w3s.link/ipfs/");
@@ -169,15 +172,12 @@ const UserDocuments = () => {
   const uploadDocToIPFS = async (values: any) => {
     try {
       messageApi.info("Uploading");
-      console.log("NFT TOKEN IS:", NFT_TOKEN);
       if (NFT_TOKEN) {
         //TODO : set loading state to be true here
 
         const client = new NFTStorage({
           token: NFT_TOKEN,
         });
-        console.log("NFT Storage Client:=>", client);
-
         const metadata = await client.store({
           name: values.Name,
           description: values.Description,
@@ -185,10 +185,7 @@ const UserDocuments = () => {
             type: uplodedDocument.type,
           }),
         });
-
-        console.log("MetaData :=> ", metadata);
         const sha256 = await blobToSHA256(uplodedDocument);
-        console.log("SHA256 of File :=> ", sha256);
         const currentTime = new Date();
         const emailArray: string[] = [];
         for (var i = 1; i <= participantsLength; i++) {
@@ -242,11 +239,9 @@ const UserDocuments = () => {
     } catch (error) {
       setLoading(false);
       messageApi.error("Failed to Upload");
-      console.error(error, "ERROR UPLOADING");
     }
   };
   async function sendEmail(email: string) {
-    console.log("sending email to", email);
     const content = {
       receiverEmail: email,
       subject: "Signature Needed in Contract",
@@ -454,9 +449,7 @@ const UserDocuments = () => {
             ),
           },
         ]}
-        onChange={(value) => {
-          console.log(value);
-        }}
+        onChange={(value) => {}}
       />
 
       <Drawer

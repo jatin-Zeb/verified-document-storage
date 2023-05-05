@@ -1,11 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import * as styles from "./styles";
 import Button from "../shared/Button";
-import { useContext, useEffect, useState } from "react";
-import { contractContext } from "../UserHome/Contract";
-import { ContractContextType } from "../UserHome/Contract/context";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import metamask from "../../public/images/metamsk.png";
 import google from "../../public/images/google.png";
 import logo_doc from "../../public/images/logo_doc1.png";
 import Image from "next/image";
@@ -26,7 +23,7 @@ import {
   TokenResponse,
 } from "@react-oauth/google";
 import axios from "axios";
-import { fetchKycData } from "../../actions/kyc";
+import { fetchKycData, setKycStatus } from "../../actions/kyc";
 
 const Header = () => {
   const router = useRouter();
@@ -50,11 +47,17 @@ const Header = () => {
   useEffect(() => {
     if (userState.loginData) {
       setIsLoggedIn(true);
-      if (userState.loginData.kyc_status === KYC_STATUS.VERIFIED) {
-        fetchKycData(googleToken);
-      }
     }
   }, [googleToken, userState.loginData]);
+
+  useEffect(() => {
+    if (
+      userState.isLoggedIn &&
+      userState.loginData?.kyc_status === KYC_STATUS.VERIFIED
+    ) {
+      fetchKycData(googleToken);
+    }
+  }, [userState.isLoggedIn]);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse: TokenResponse) => {
@@ -68,6 +71,7 @@ const Header = () => {
     googleLogout();
     setGoogleLoginData(null);
     getLoginDetails("");
+    setKycStatus(0);
   };
 
   useEffect(() => {
@@ -88,7 +92,6 @@ const Header = () => {
           });
         })
         .catch((err) => {
-          console.log("error in api", err);
           sessionStorage.removeItem("google_token");
         });
     }
@@ -102,7 +105,6 @@ const Header = () => {
     } else sessionStorage.clear();
   };
   useEffect(() => {
-    console.log(userState);
     if (defaultAccount !== "") {
       setOpenModal(false);
     }
@@ -200,7 +202,7 @@ const Header = () => {
 
       <div css={styles.loginStatus}>
         <div css={{ position: "relative" }}>
-           {profile ? (
+          {profile ? (
             <div css={styles.address}>
               <Image
                 src={profile.picture}
@@ -216,9 +218,11 @@ const Header = () => {
                   {profile.given_name} {profile.family_name}
                 </span>
                 <div css={styles.walletAddress}>
-                  {defaultAccount !== ""?defaultAccount.slice(0, 5) +
-                    "....." +
-                    defaultAccount.slice(defaultAccount.length - 5):null}
+                  {defaultAccount !== ""
+                    ? defaultAccount.slice(0, 5) +
+                      "....." +
+                      defaultAccount.slice(defaultAccount.length - 5)
+                    : null}
                 </div>
               </Tooltip>
 

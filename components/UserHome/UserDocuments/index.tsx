@@ -25,7 +25,7 @@ import { MoreOutlined, UploadOutlined } from "@ant-design/icons";
 import { ContractContextType } from "./../Contract/context";
 import { contractContext } from "./../Contract";
 import Button from "../../shared/Button";
-import { addNewContract, setUserDocs } from "../../../actions/docs";
+import { acceptContract, addNewContract, setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { Document, NewDoc } from "../../../typings/docs";
@@ -37,6 +37,11 @@ import Image from "next/image";
 import VerifyDoc from "../VerifyDoc";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+
+enum ModalType {
+  VIEW_PARTICIPANTS = 1,
+  APPROVE_CONTRACT
+}
 
 const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -67,10 +72,13 @@ const UserDocuments = () => {
   const [modalData, setModalData] = useState<{
     emailsInvolved: string[];
     statuses: boolean[];
+    sha: string;
   }>({
     emailsInvolved: [],
     statuses: [],
+    sha: ""
   });
+  const [modalType, setModalType] = useState(ModalType.VIEW_PARTICIPANTS);
   const connectToWallet = async () => {
     await fetchWalletInfo();
   };
@@ -85,10 +93,11 @@ const UserDocuments = () => {
     }
   }, [isLoggedIn, contactHandler]);
 
-  const setModal = (EmailsInvolved: string[], statuses: boolean[]) => {
+  const setModal = (EmailsInvolved: string[], statuses: boolean[], sha: string) => {
     setModalData({
       emailsInvolved: EmailsInvolved,
       statuses: statuses,
+      sha: sha
     });
   };
 
@@ -117,7 +126,9 @@ const UserDocuments = () => {
             <Button
               type="blue"
               onClick={() => {
-                approveTransaction("email@gmail.com", data.sha); //@TODO: add signed in user email here
+                setModalOpen(true);
+                setModal(data.EmailsInvolved, data.Statuses, data.sha);
+                setModalType(ModalType.APPROVE_CONTRACT);
               }}
             >
               Approve
@@ -129,7 +140,8 @@ const UserDocuments = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setModalOpen(true);
-                  setModal(data.EmailsInvolved, data.Statuses);
+                  setModal(data.EmailsInvolved, data.Statuses, data.sha);
+                  setModalType(ModalType.VIEW_PARTICIPANTS)
                 }}
               >
                 View Participants
@@ -204,7 +216,7 @@ const UserDocuments = () => {
           }
           const googleToken = sessionStorage.getItem("google_token");
           if (googleToken) {
-            displayRazorPay(uploadData, setLoading)
+            displayRazorPay(uploadData, setLoading, "ADD_CONTRACT")
           } else {
             alert("PLEASE LOG IN");
             setLoading(false);
@@ -257,7 +269,7 @@ const UserDocuments = () => {
     );
   }
 
-  const displayRazorPay = async (data: NewDoc, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const displayRazorPay = async (data: NewDoc, setLoading: React.Dispatch<React.SetStateAction<boolean>>, type?: string) => {
     const options = {
       key: "rzp_test_TF1xnKd4kEZOBk",
       currency: "INR",
@@ -270,10 +282,18 @@ const UserDocuments = () => {
       handler: async function (response: any) {
         const googleToken = sessionStorage.getItem("google_token");
         if (googleToken) {
-          const resp = await addNewContract(data, googleToken);
-          if (resp) {
-            setLoading(false);
-            toast("Contract Uploaded Successfully")
+          if (type === "ADD_CONTRACT") {
+            const resp = await addNewContract(data, googleToken);
+            if (resp) {
+              setLoading(false);
+              toast("Contract Uploaded Successfully")
+            }
+          } else {
+            const resp = await acceptContract(modalData.sha, googleToken);
+            if (resp) {
+              setModalOpen(false);
+              toast("Contract Approved");
+            }
           }
         }
       },
@@ -583,36 +603,51 @@ const UserDocuments = () => {
       </Drawer>
       <ToastContainer position="bottom-left" />
       <Modal
+        width={400}
+        title={modalType===ModalType.APPROVE_CONTRACT ? "Choose Payment type" : "Participants"}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
       >
-        <div css={styles.participants}>
-          <React.Fragment>
-            <span
-              style={{
-                gridRow: "1/2",
-                fontWeight: "700",
-                paddingBottom: "10px",
-              }}
-            >
-              Email
-            </span>
-            <span style={{ gridRow: "1/2", fontWeight: "700" }}>Status</span>
-          </React.Fragment>
-          {modalData.emailsInvolved.map((val, key) => {
-            return (
-              <React.Fragment key={key}>
-                <span>{val}</span>
-                <span style={{ paddingBottom: "10px" }}>
-                  <Tag color={modalData.statuses[key] ? "green" : "gold"}>
-                    {modalData.statuses[key] ? "SIGNED" : "PENDING"}
-                  </Tag>
+        {
+          modalType === ModalType.VIEW_PARTICIPANTS ?
+            <div css={styles.participants}>
+              <React.Fragment>
+                <span
+                  style={{
+                    gridRow: "1/2",
+                    fontWeight: "700",
+                    paddingBottom: "10px",
+                  }}
+                >
+                  Email
                 </span>
+                <span style={{ gridRow: "1/2", fontWeight: "700" }}>Status</span>
               </React.Fragment>
-            );
-          })}
-        </div>
+              {modalData.emailsInvolved.map((val, key) => {
+                return (
+                  <React.Fragment key={key}>
+                    <span>{val}</span>
+                    <span style={{ paddingBottom: "10px" }}>
+                      <Tag color={modalData.statuses[key] ? "green" : "gold"}>
+                        {modalData.statuses[key] ? "SIGNED" : "PENDING"}
+                      </Tag>
+                    </span>
+                  </React.Fragment>
+                );
+              })}
+            </div>
+            :
+            <div css={styles.modalPayment}>
+              <Button type="secondary" onClick={() => displayRazorPay({} as NewDoc, setLoading)}>
+                Pay via Fiat
+              </Button>
+              <Button type="primary" onClick={() => approveTransaction(loginData?.email ?? "", modalData.sha)}>
+                Pay via Metamask
+              </Button>
+            </div>
+        }
+        
       </Modal>
     </div>
   );

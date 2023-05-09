@@ -74,3 +74,8 @@ export const uploadKyc = css({
   cursor: "pointer",
   border: `1px solid ${colors.Zeb_BG_Light_Blue} `,
 });
+
+export const modalPayment = css({
+  display: "flex",
+  justifyContent: "space-around"
+})

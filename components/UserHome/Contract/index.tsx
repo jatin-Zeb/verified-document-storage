@@ -9,14 +9,16 @@ import { ActionType, KYC_STATUS } from "../../../reducers/kyc";
 import { KYCDocument } from "../../../typings/kycDocs";
 import { setIsLoggedIn } from "../../../actions/user";
 import { fetchKycData } from "../../../actions/kyc";
-import { setUserDocs } from "../../../actions/docs";
+import { setDocumentsLoading, setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { UserState } from "../../../reducers/userInfo";
 import { useRouter } from "next/router";
 export const contractContext = createContext<ContractContextType | null>(null);
 
-const rpcProvider = new ethers.providers.JsonRpcProvider("https://eth-sepolia.g.alchemy.com/v2/n4yLaiI4besVGa-VK5rIPefdWiUznMJL");
+const rpcProvider = new ethers.providers.JsonRpcProvider(
+  "https://eth-sepolia.g.alchemy.com/v2/n4yLaiI4besVGa-VK5rIPefdWiUznMJL"
+);
 interface Props {
   children: React.ReactNode;
 }
@@ -39,7 +41,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
 
         return true;
       } else {
-        alert("No metamask installed!!")
+        alert("No metamask installed!!");
         setIsLoggedIn(false);
         return false;
       }
@@ -84,9 +86,9 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
     IPFSUri: string,
     InvitesEmail: string[]
   ) {
-    const isWalletConnected = await fetchWalletInfo()
-    if(!isWalletConnected){
-      return
+    const isWalletConnected = await fetchWalletInfo();
+    if (!isWalletConnected) {
+      return;
     }
     const contract = await checkAndConnectContractWithSigner();
     await contract.addContract(
@@ -140,7 +142,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       var allSigned = [];
       var signed = [];
       var pending = [];
-  
+
       const createdContractSha = await contract.getContractbyCreator(
         userState.googleData?.email
       );
@@ -149,7 +151,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       );
       const SHAs = createdContractSha.concat(contractShaArray);
       console.log(SHAs);
-        
+
       for (var i = 0; i < SHAs.length; i++) {
         const sha = SHAs[i];
         const contractDetails = await contract.getContract(sha);
@@ -185,17 +187,19 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
           });
         }
       }
-      
+
       setUserDocs({ all: allSigned, signed, pending });
+      setDocumentsLoading(false);
     } else {
       console.log("wallet not connnected");
+      setDocumentsLoading(false);
     }
   }
 
   async function approveTransaction(email: string, sha: string) {
-    const isWalletConnected = await fetchWalletInfo()
-    if(!isWalletConnected){
-      return
+    const isWalletConnected = await fetchWalletInfo();
+    if (!isWalletConnected) {
+      return;
     }
     const contract = await checkAndConnectContractWithSigner();
     await contract.approveTransaction(userState.googleData?.email, sha);

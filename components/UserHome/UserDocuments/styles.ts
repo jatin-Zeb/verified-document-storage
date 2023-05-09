@@ -79,3 +79,11 @@ export const modalPayment = css({
   display: "flex",
   justifyContent: "space-around"
 })
+
+export const loader = css({
+  display: "flex",
+  height: "350px",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center"
+})

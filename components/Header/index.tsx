@@ -142,6 +142,7 @@ const Header = () => {
     if (window.ethereum && window.ethereum.on)
       window.ethereum.on("chainChanged", onChainChangedHandler);
   }
+
   return (
     <div css={styles.header}>
       <div css={styles.topBar}>
@@ -199,42 +200,7 @@ const Header = () => {
 
       <div css={styles.loginStatus}>
         <div css={{ position: "relative" }}>
-          {defaultAccount !== "" ? (
-            <div css={styles.address}>
-              <Image
-                src={metamask}
-                alt=""
-                onClick={() => setSignOutVisible(!signoutVisible)}
-              />
-              <Tooltip placement="bottomRight" title={defaultAccount}>
-                <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                  {defaultAccount.slice(0, 5) +
-                    "....." +
-                    defaultAccount.slice(defaultAccount.length - 5)}
-                </span>
-              </Tooltip>
-
-              {signoutVisible && (
-                <span css={styles.signoutContainer}>
-                  <div
-                    css={styles.selectOverlay}
-                    onClick={() => setSignOutVisible(false)}
-                  ></div>
-                  <div
-                    css={styles.signout}
-                    onClick={() => {
-                      setDefaultAccount("");
-                      setIsLoggedIn(false);
-                      setUserAddress("");
-                      setSignOutVisible(false);
-                    }}
-                  >
-                    Sign Out
-                  </div>
-                </span>
-              )}
-            </div>
-          ) : profile ? (
+           {profile ? (
             <div css={styles.address}>
               <Image
                 src={profile.picture}
@@ -245,9 +211,15 @@ const Header = () => {
                 onClick={() => setSignOutVisible(!signoutVisible)}
               />
               <Tooltip placement="bottomRight" title={defaultAccount}>
+                &nbsp;
                 <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                  &nbsp;{profile.given_name} {profile.family_name}
+                  {profile.given_name} {profile.family_name}
                 </span>
+                <div css={styles.walletAddress}>
+                  {defaultAccount !== ""?defaultAccount.slice(0, 5) +
+                    "....." +
+                    defaultAccount.slice(defaultAccount.length - 5):null}
+                </div>
               </Tooltip>
 
               {signoutVisible && (

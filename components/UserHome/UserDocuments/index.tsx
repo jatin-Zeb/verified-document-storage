@@ -31,17 +31,23 @@ import { StoreState } from "../../../reducers";
 import { Document, NewDoc } from "../../../typings/docs";
 import { MPC, UploadedDocsProps } from "../../../reducers/docs";
 import { UserState } from "../../../reducers/userInfo";
-import { KYCDocs } from "../../../reducers/kyc";
+import { KYCDocs, KYC_STATUS } from "../../../reducers/kyc";
 import crossImg from "../../../public/icons/cross.png";
 import Image from "next/image";
 import VerifyDoc from "../VerifyDoc";
 import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 enum ModalType {
   VIEW_PARTICIPANTS = 1,
   APPROVE_CONTRACT
 }
+
+const loadingComponent = 
+<div css={styles.loader}>
+    <Spin />
+    <div>Fetching Documents...</div>
+</div>;
 
 const UserDocuments = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -50,6 +56,8 @@ const UserDocuments = () => {
   const { all, signed, pending } = useSelector<StoreState, UploadedDocsProps>(
     (state) => state.docs.uploadedDocs
   );
+  const isDocsLoading = useSelector<StoreState, boolean>(state => state.docs.isLoading);
+  console.log(isDocsLoading, "isDocsLoading");
   const [submitButton, setSubmitButton] = useState("");
   const { isLoggedIn, loginData } = useSelector<StoreState, UserState>(
     (state) => state.user
@@ -123,16 +131,21 @@ const UserDocuments = () => {
             View
           </a>
           {tab === "pending" && (
-            <Button
-              type="blue"
-              onClick={() => {
-                setModalOpen(true);
+            <Popover content={"Please complete your kyc"}>
+              <AntButton
+                type="primary"
+                shape="round"
+                onClick={() => {
+                  if (loginData && loginData.kyc_status === KYC_STATUS.VERIFIED){
+                    setModalOpen(true);
                 setModal(data.EmailsInvolved, data.Statuses, data.sha);
                 setModalType(ModalType.APPROVE_CONTRACT);
-              }}
-            >
-              Approve
-            </Button>
+                  }
+                }}
+              >
+                Approve
+              </AntButton>
+            </Popover>
           )}
           <Popover
             content={
@@ -212,8 +225,8 @@ const UserDocuments = () => {
             end_date: values.DateRange[1]["$d"].toLocaleString(),
             sha256: sha256,
             ipfsUrl: metadata.url,
-            inviteEmails: emailArray
-          }
+            inviteEmails: emailArray,
+          };
           const googleToken = sessionStorage.getItem("google_token");
           if (googleToken) {
             displayRazorPay(uploadData, setLoading, "ADD_CONTRACT")
@@ -223,23 +236,23 @@ const UserDocuments = () => {
           }
         } else {
           await addContract(
-          values.Category || "",
-          values.Description || "",
-          values.Name || "",
-          values.Email || "", // ADD GOOGLE EMAIL HERE @TODO
-          values.DateRange[0]["$d"].toLocaleString() || "",
-          values.DateRange[1]["$d"].toLocaleString() || "",
-          currentTime.toLocaleString(),
-          sha256,
-          metadata.url,
-          emailArray
+            values.Category || "",
+            values.Description || "",
+            values.Name || "",
+            values.Email || "", // ADD GOOGLE EMAIL HERE @TODO
+            values.DateRange[0]["$d"].toLocaleString() || "",
+            values.DateRange[1]["$d"].toLocaleString() || "",
+            currentTime.toLocaleString(),
+            sha256,
+            metadata.url,
+            emailArray
           );
           setLoading(false);
         }
 
         // await loadMyDocuments();
         // await populateUseDocuments();
-        
+
         //TODO: set loading state to be false here
         messageApi.success("Uploaded Successfully ");
         message.info("List will be updated in a few minutes");
@@ -279,7 +292,7 @@ const UserDocuments = () => {
       image:
         "https://mern-blog-akky.herokuapp.com/static/media/logo.8c649bfa.png",
 
-      handler: async function (response: any) {
+      handler: async function(response: any) {
         const googleToken = sessionStorage.getItem("google_token");
         if (googleToken) {
           if (type === "ADD_CONTRACT") {
@@ -347,7 +360,7 @@ const UserDocuments = () => {
             style={{ marginRight: "10px" }}
             type="secondary"
             onClick={() => setVerifyDocOpen(true)}
-            disabled={kycVerified !== 2 || !isLoggedIn}
+            disabled={!isLoggedIn}
           >
             Verify Document
           </Button>
@@ -383,7 +396,7 @@ const UserDocuments = () => {
                 ALL SIGNED <span css={styles.contractCount}>{all.length}</span>
               </div>
             ),
-            children: (
+            children: (isDocsLoading ? loadingComponent :
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
@@ -413,7 +426,7 @@ const UserDocuments = () => {
                 SIGNED <span css={styles.contractCount}>{signed.length}</span>
               </div>
             ),
-            children: (
+            children: (isDocsLoading ? loadingComponent :
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
@@ -443,7 +456,7 @@ const UserDocuments = () => {
                 PENDING <span css={styles.contractCount}>{pending.length}</span>
               </div>
             ),
-            children: (
+            children: (isDocsLoading ? loadingComponent :
               <Table
                 tableBackgroundColor="#F5F5F5"
                 customTableBorder="border-top:1px"
@@ -527,15 +540,27 @@ const UserDocuments = () => {
                 },
               ]}
             >
-              <Input />
+              <Input value={loginData?.email} disabled />
             </Form.Item>
-            <Form.Item name="DateRange" label="Contract Validity Date" rules={[{ required: true, message: "Select date range!" }]}>
+            <Form.Item
+              name="DateRange"
+              label="Contract Validity Date"
+              rules={[{ required: true, message: "Select date range!" }]}
+            >
               <DatePicker.RangePicker />
             </Form.Item>
-            <Form.Item label="Category" name="Category" rules={[{ required: true, message: "Enter Category" }]}>
+            <Form.Item
+              label="Category"
+              name="Category"
+              rules={[{ required: true, message: "Enter Category" }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="Description" label="Description" rules={[{ required: true, message: "Enter Description" }]}>
+            <Form.Item
+              name="Description"
+              label="Description"
+              rules={[{ required: true, message: "Enter Description" }]}
+            >
               <Input.TextArea rows={4} />
             </Form.Item>
             {[...Array(participantsLength)].map((val, key) => (

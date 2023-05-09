@@ -47,3 +47,15 @@ export const acceptContract = async (sha256: string, token: string) => {
     return e;
   }
 }
+
+export const setDocumentsLoading = (state: boolean) => {
+  actionCreator(
+    "setDocumentsLoading",
+    async (dispatch: Dispatch): Promise<void> => {
+      dispatch({
+        type: ActionType.SET_DOCUMENTS_LOADING,
+        payload: state,
+      });
+    }
+  );
+} 

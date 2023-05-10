@@ -9,7 +9,7 @@ import { ActionType, KYC_STATUS } from "../../../reducers/kyc";
 import { KYCDocument } from "../../../typings/kycDocs";
 import { setIsLoggedIn } from "../../../actions/user";
 import { fetchKycData } from "../../../actions/kyc";
-import { setUserDocs } from "../../../actions/docs";
+import { setDocumentsLoading, setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { UserState } from "../../../reducers/userInfo";
@@ -189,8 +189,10 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       }
 
       setUserDocs({ all: allSigned, signed, pending });
+      setDocumentsLoading(false);
     } else {
       console.log("wallet not connnected");
+      setDocumentsLoading(false);
     }
   }
 

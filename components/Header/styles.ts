@@ -7,15 +7,15 @@ export const header = css({
   padding: utils.remConverter(20),
   display: "flex",
   justifyContent: "space-between",
+  background: colors.Zeb_Solid_White,
 });
 
-export const webName = (path: string) =>
-  css({
-    ...typography.B2_20_regular,
-    textDecoration: "none",
-    color: path === "/" ? "" : "#444444",
-    marginLeft: "-20px",
-  });
+export const webName = css({
+  ...typography.B2_20_regular,
+  textDecoration: "none",
+  color: "#444444",
+  marginLeft: "-20px",
+});
 
 export const topBar = css({
   display: "flex",
@@ -27,20 +27,44 @@ export const subHeading = (show: boolean = true) => {
   return css({
     pointerEvents: show ? "inherit" : "none",
     textDecoration: "none",
+    textTransform: "uppercase",
     cursor: "pointer",
     opacity: show ? "1" : "0.4",
+    color: colors.Zeb_Solid_Very_Dark_Grey_Blue,
+    marginLeft: utils.remConverter(16),
+    display: "inline-block",
+    position: "relative",
+    padding: "15px 20px",
+    "&:hover": {
+      color: "green",
+      width: "100%",
+      left: "0",
+    },
+    "::after": {
+      // background: "none repeat scroll 0 0 transparent",
+      bottom: "0",
+      content: `""`,
+      display: "block",
+      height: "2px",
+      left: "50%",
+      position: "absolute",
+      background: "#fff",
+      transition: "width 0.3s ease 0s, left 0.3s ease 0s",
+      width: "0",
+    },
   });
 };
 
 export const buttonStyle = css({
   ...typography.C3_14,
-  color: "#444444",
+  color: colors.Zeb_Solid_White,
   fontWeight: "800",
   textTransform: "none",
   width: "140px",
-  backgroundColor: "white",
+  backgroundColor: colors.Zeb_Solid_Bright_Blue,
   borderRadius: utils.remConverter(8),
   padding: utils.remConverter(4),
+
   position: "relative",
 });
 
@@ -105,19 +129,19 @@ export const loginOptionContainer = css({
   border: "1px solid rgba(0,0,0,0.25)",
   padding: utils.remConverter(10),
   position: "relative",
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 export const loginImg = css({
-  position: "absolute"
-})
+  position: "absolute",
+});
 
 export const loginTitle = css({
   flex: "1",
   display: "flex",
-  justifyContent: "center"
-})
+  justifyContent: "center",
+});
 
 export const walletAddress = css({
-  fontSize: 14
-})
+  fontSize: 14,
+});

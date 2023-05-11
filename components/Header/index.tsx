@@ -157,26 +157,12 @@ const Header = () => {
           }}
           width={50}
         />
-        <div css={styles.webName(pathName)}>DocuSmriti</div>
+        <div css={styles.webName}>DocuSmriti</div>
+      </div>
 
+      <div css={styles.loginStatus}>
         {router.pathname === "/" ? (
           <>
-            <div
-              css={styles.subHeading()}
-              onClick={() => {
-                router.push("/aboutUs");
-              }}
-            >
-              About Us
-            </div>
-            <div
-              css={styles.subHeading(userState.isLoggedIn && kycVerified === 2)}
-              onClick={() => {
-                if (userState.isLoggedIn) router.push("/docs");
-              }}
-            >
-              Docs
-            </div>
             {userState.isLoggedIn && kycVerified === 0 && (
               <div
                 css={styles.subHeading()}
@@ -187,6 +173,22 @@ const Header = () => {
                 Kyc
               </div>
             )}
+            <div
+              css={styles.subHeading(userState.isLoggedIn && kycVerified === 2)}
+              onClick={() => {
+                if (userState.isLoggedIn) router.push("/docs");
+              }}
+            >
+              Docs
+            </div>
+            <div
+              css={styles.subHeading()}
+              onClick={() => {
+                router.push("/aboutUs");
+              }}
+            >
+              About
+            </div>
           </>
         ) : (
           <Button
@@ -198,9 +200,6 @@ const Header = () => {
             HOME
           </Button>
         )}
-      </div>
-
-      <div css={styles.loginStatus}>
         <div css={{ position: "relative" }}>
           {profile ? (
             <div css={styles.address}>

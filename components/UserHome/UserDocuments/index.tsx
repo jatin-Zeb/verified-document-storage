@@ -324,7 +324,7 @@ const UserDocuments = () => {
         <p css={{ ...typography.H5_20_bold, color: colors.Zeb_Solid_Dark }}>
           Your Documents
         </p>
-        <div css={{}}>
+        <div>
           <Button
             style={{ marginRight: "10px" }}
             type="secondary"

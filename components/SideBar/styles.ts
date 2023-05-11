@@ -1,8 +1,7 @@
 import { css } from "@emotion/react";
-import { colors, typography } from "../../styles1";
+import { colors } from "../../styles1";
 export const sideBar = (expand: boolean) => {
   return css({
-    height: "100vh",
     width: "5%",
     maxWidth: "50px",
     minWidth: "30px",

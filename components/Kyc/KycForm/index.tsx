@@ -7,12 +7,8 @@ interface KycFormProps {
   setKycPage: (val: KycPage) => void;
 }
 const KycForm: React.FC<KycFormProps> = ({ setKycPage }) => {
-  const validateFields = (values: FormikValues) => {
-    console.log(values);
-  };
+  const validateFields = (values: FormikValues) => {};
   const handleSubmit = () => {
-    console.log("no error can submit");
-    // isComplete();
     setKycPage(KycPage.UploadDocuments);
   };
   return (

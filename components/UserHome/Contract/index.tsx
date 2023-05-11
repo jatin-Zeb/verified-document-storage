@@ -1,12 +1,7 @@
 import { abi, contractAddress } from "./../../../constants";
-import { useEffect, useState, createContext } from "react";
+import { useState, createContext } from "react";
 import { ethers } from "ethers";
 import { ContractContextType } from "./context";
-import { Document } from "../../../typings/docs";
-import actionCreator from "../../../utils/redux/actionCreator";
-import { Dispatch } from "../../../utils/redux/dispatch";
-import { ActionType, KYC_STATUS } from "../../../reducers/kyc";
-import { KYCDocument } from "../../../typings/kycDocs";
 import { setIsLoggedIn } from "../../../actions/user";
 import { fetchKycData } from "../../../actions/kyc";
 import { setDocumentsLoading, setUserDocs } from "../../../actions/docs";
@@ -27,7 +22,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
   const [contract, setContract] = useState<any>();
   const [userAddress, setUserAddress] = useState<any>();
   const userState = useSelector<StoreState, UserState>((state) => state.user);
-  const router = useRouter();
+
   const fetchWalletInfo = async () => {
     try {
       if (window.ethereum !== undefined) {
@@ -150,7 +145,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
         userState.googleData?.email
       );
       const SHAs = createdContractSha.concat(contractShaArray);
-      console.log(SHAs);
 
       for (var i = 0; i < SHAs.length; i++) {
         const sha = SHAs[i];
@@ -215,7 +209,7 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       );
       return [contractDetails, data];
     } else {
-      console.log("wallet not connnected");
+      throw new Error("wallet not connnected");
     }
   }
 

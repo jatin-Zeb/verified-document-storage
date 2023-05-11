@@ -5,28 +5,27 @@ import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
-import UserProfile from "../components/UserProfile";
+import UserDetails from "../components/UserProfile/UserDetails";
 
 const Profile: NextPage = () => {
   const [openSideDrawer, setOpenSideDrawer] = useState<boolean>(false);
 
     useEffect(()=>{
         //call user api to check if logged in
-        //call api for stored document when user is successful
-
+        //call api for stored document when user is successful  
     })
   return (
-    <div style={{height:"100vh", background:"#F5F5F5"}}>
-       
-       
-        <div css={{display:"flex"}}>
+    <div style={{ background:"#F5F5F5"}}>
+      <Header />
+      <div css={{display:"flex"}}>
         <SideBar expand={openSideDrawer} toggleExpand={()=>{setOpenSideDrawer(prev=>!prev)}} selected="profile"/>
         <div css={{width:openSideDrawer? "90%":"95%",justifyContent:"end", transition:"0.2s all ease-in",marginLeft:"auto"}}>
-          <Header />
-          <UserProfile />
+          <div css={{ display: "flex",padding: "10px 46px",justifyContent: "space-between"}}>
+          <UserDetails />
+          </div>
         </div>
-        </div>
-        <Footer />
+      </div>
+      <Footer />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import ReactCrop, { Crop } from "react-image-crop";
+import { Crop } from "react-image-crop";
 import * as styles from "./styles";
 import { SerializedStyles } from "@emotion/react";
 import "react-image-crop/dist/ReactCrop.css";
@@ -20,7 +20,7 @@ export const webcamProperties = {
   height: 500,
   screenshotQuality: 1,
   screenshotFormat: "image/jpeg",
-  width: "100%"
+  width: "100%",
 };
 
 const USER_FILENAME = "UserSelfie.jpeg";
@@ -32,7 +32,7 @@ const CaptureFromWebCam: React.FC<CaptureFromWebCamProps> = ({
   enumerateDevices,
   loading,
   webcamRef,
-  selfieData
+  selfieData,
 }) => {
   const [showCapturedImage, setShowCapturedImage] = useState<string | null>(
     null
@@ -65,18 +65,16 @@ const CaptureFromWebCam: React.FC<CaptureFromWebCamProps> = ({
   }, [selfieData, showCapturedImage]);
 
   const capture = useCallback(async () => {
+    // const canvas = previewCanvasRef.current;
+    // const imageUrl = (canvas && canvas.toDataURL()) as string;
+    // setShowCapturedImage(imageUrl);
 
-      // const canvas = previewCanvasRef.current;
-      // const imageUrl = (canvas && canvas.toDataURL()) as string;
-      // setShowCapturedImage(imageUrl);
-
-      // const res = await fetch(imageUrl);
-      // const buff = await res.arrayBuffer();
-      // const file = await new File([buff], USER_FILENAME, { type: IMAGE_TYPE });
-      // setSelfie([{ file: file, filename: USER_FILENAME }]);
-const imageSrc = webcamRef?.current?.getScreenshot();
-        setSelfie(imageSrc||"");
-    
+    // const res = await fetch(imageUrl);
+    // const buff = await res.arrayBuffer();
+    // const file = await new File([buff], USER_FILENAME, { type: IMAGE_TYPE });
+    // setSelfie([{ file: file, filename: USER_FILENAME }]);
+    const imageSrc = webcamRef?.current?.getScreenshot();
+    setSelfie(imageSrc || "");
   }, [setShowCapturedImage, setSelfie]);
 
   useEffect(() => {
@@ -116,28 +114,28 @@ const imageSrc = webcamRef?.current?.getScreenshot();
 
   return (
     <div css={addedStyles}>
-        <div css={styles.cameraAndBtn}>
-          {showWebcam && (
-            <Webcam
-              {...webcamProperties}
-              screenshotFormat={IMAGE_TYPE}
-              ref={webcamRef}
-            />
-          )}
-          {devices.length <= 0 && (
-            <span css={styles.noCam}>No WebCam found.</span>
-          )}
-          
-          <div css={styles.croppedPreview}>
-            <canvas
-              ref={previewCanvasRef}
-              style={{
-                width: Math.round(completedCrop?.width ?? 0),
-                height: Math.round(completedCrop?.height ?? 0)
-              }}
-            />
-          </div>
-          {/* {showWebcam && (
+      <div css={styles.cameraAndBtn}>
+        {showWebcam && (
+          <Webcam
+            {...webcamProperties}
+            screenshotFormat={IMAGE_TYPE}
+            ref={webcamRef}
+          />
+        )}
+        {devices.length <= 0 && (
+          <span css={styles.noCam}>No WebCam found.</span>
+        )}
+
+        <div css={styles.croppedPreview}>
+          <canvas
+            ref={previewCanvasRef}
+            style={{
+              width: Math.round(completedCrop?.width ?? 0),
+              height: Math.round(completedCrop?.height ?? 0),
+            }}
+          />
+        </div>
+        {/* {showWebcam && (
             <div
               css={styles.captureBtn}
               onClick={capture}
@@ -145,7 +143,7 @@ const imageSrc = webcamRef?.current?.getScreenshot();
               <span>click photo</span>
             </div>
           )} */}
-        </div>
+      </div>
     </div>
   );
 };

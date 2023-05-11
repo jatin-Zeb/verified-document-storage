@@ -34,6 +34,7 @@ const Home: NextPage = () => {
     (state) => state.kyc
   );
   return (
+    <>
     <div css={styles.landingContainer}>
       <Header />
       <div css={styles.body}>
@@ -178,12 +179,14 @@ const Home: NextPage = () => {
           <NewsLetter />
         </div>
       </div>
+      </div>
       <div
         onClick={()=>router.push("/contact")}
         css={css({
-          position: "absolute",
+          position: "sticky",
           bottom: "40px",
-          right: "40px",
+          left: "95%",
+          width: "50px",
           backgroundColor: colors.Zeb_Solid_Bright_Blue,
           padding: "10px",
           borderRadius: "50%",
@@ -191,7 +194,7 @@ const Home: NextPage = () => {
         })}>
         <Image width={30} height={30} src={contactUs} alt="" />
         </div>
-    </div>
+    </>
   );
 };
 

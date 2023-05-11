@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import contact from "../../public/images/contact.jpeg";
 import Image from "next/image";
+import Header from "../Header";
 
 const { TextArea } = Input;
 
@@ -33,7 +34,8 @@ const ContactPage: React.FC = () => {
   }
 
   return (
-    <>
+    <div style={{backgroundColor: "white"}}>
+      <Header />
       <div css={styles.contactContainer}>
         <div css={styles.details}>
           <h1>Have Questions?</h1>
@@ -77,7 +79,7 @@ const ContactPage: React.FC = () => {
       </div>
       <Footer />
       <ToastContainer position="bottom-left" />
-    </>
+    </div>
   );
 }
 

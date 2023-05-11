@@ -9,14 +9,25 @@ import mainPageImage4 from "../public/images/mainPageImage5.webp";
 import Image from "next/image";
 import { NextPage } from "next";
 import Header from "../components/Header";
-import { Button, Input } from "antd";
+import { Button } from "antd";
 import { utils } from "../styles1";
-import { css } from "@emotion/react";
 import { useRouter } from "next/router";
+import { StoreState } from "../reducers";
+import { KYCDocs } from "../reducers/kyc";
+import { useSelector } from "react-redux";
+import { UserState } from "../reducers/userInfo";
+import NewsLetter from "../components/NewsLetter";
 
 // @ts-nocheck
 const Home: NextPage = () => {
   const history = useRouter();
+  const { isLoggedIn } = useSelector<StoreState, UserState>(
+    (state) => state.user
+  );
+
+  const { kycVerified } = useSelector<StoreState, KYCDocs>(
+    (state) => state.kyc
+  );
   return (
     <div css={styles.landingContainer}>
       <Header />
@@ -31,14 +42,25 @@ const Home: NextPage = () => {
                 Securely store your important documents on the Blockchain with
                 Docusmriti – the ultimate solution for document storage.
               </p>
+              {isLoggedIn && kycVerified !== 2 && (
+                <p css={styles.subHeading}>
+                  To Get Started, Please verify your KYC first
+                </p>
+              )}
               <Button
                 type="primary"
                 size="large"
                 onClick={() => {
-                  history.push("/docs");
+                  if (!isLoggedIn || kycVerified === 2) {
+                    history.push("/docs");
+                  } else {
+                    history.push("/profile");
+                  }
                 }}
               >
-                View All Services
+                {!isLoggedIn || kycVerified === 2
+                  ? "View All Services"
+                  : "Please Verify KYC"}
               </Button>
             </div>
             <Image src={mainPageImage} width={300} height={300} alt="main" />
@@ -148,22 +170,7 @@ const Home: NextPage = () => {
               />
             </div>
           </div>
-          <div css={styles.subscribe}>
-            <p css={styles.benefitHeading}> Subscribe to Newsletter</p>
-            <p css={styles.featureSubHeading}>
-              Enter your email address to register to our newsletter
-              subscription!
-            </p>
-            <Input
-              css={css({
-                width: "50%",
-                marginRight: "30px",
-              })}
-            />
-            <Button type="primary" size="large">
-              SEND
-            </Button>
-          </div>
+          <NewsLetter />
         </div>
       </div>
     </div>

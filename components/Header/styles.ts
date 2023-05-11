@@ -1,14 +1,16 @@
 import { css } from "@emotion/react";
 import { colors, typography, utils } from "../../styles1";
 
-export const header = css({
-  width: "100%",
-  height: utils.remConverter(72),
-  padding: utils.remConverter(20),
-  display: "flex",
-  justifyContent: "space-between",
-  background: colors.Zeb_Solid_White,
-});
+export const header = (gap: boolean) => {
+  return css({
+    width: "100%",
+    height: utils.remConverter(72),
+    display: "flex",
+    justifyContent: "space-between",
+    background: "#8bdbf22b",
+    padding: `${utils.remConverter(20)} ${utils.remConverter(gap ? 100 : 20)}`,
+  });
+};
 
 export const webName = css({
   ...typography.B2_20_regular,
@@ -34,23 +36,14 @@ export const subHeading = (show: boolean = true) => {
     marginLeft: utils.remConverter(16),
     display: "inline-block",
     position: "relative",
-    padding: "15px 20px",
+    padding: "10px 20px",
+    transitionProperty: "color , opacity , background",
+    transitionDuration: "0.2s",
+    msTransitionProperty: "linear",
+    borderRadius: "8px",
+
     "&:hover": {
-      color: "green",
-      width: "100%",
-      left: "0",
-    },
-    "::after": {
-      // background: "none repeat scroll 0 0 transparent",
-      bottom: "0",
-      content: `""`,
-      display: "block",
-      height: "2px",
-      left: "50%",
-      position: "absolute",
-      background: "#fff",
-      transition: "width 0.3s ease 0s, left 0.3s ease 0s",
-      width: "0",
+      background: colors.Zeb_Transparent_Yellow_01,
     },
   });
 };
@@ -144,4 +137,12 @@ export const loginTitle = css({
 
 export const walletAddress = css({
   fontSize: 14,
+});
+
+export const optionIcon = css({
+  fontSize: "18px",
+  color: "#000000",
+  margin: "5px 0px",
+  cursor: "pointer",
+  marginRight: "5px",
 });

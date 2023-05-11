@@ -64,7 +64,6 @@ const UserDocuments = () => {
   const isDocsLoading = useSelector<StoreState, boolean>(
     (state) => state.docs.isLoading
   );
-  console.log(isDocsLoading, "isDocsLoading");
   const [submitButton, setSubmitButton] = useState("");
   const { isLoggedIn, loginData } = useSelector<StoreState, UserState>(
     (state) => state.user

@@ -185,7 +185,6 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       setUserDocs({ all: allSigned, signed, pending });
       setDocumentsLoading(false);
     } else {
-      console.log("wallet not connnected");
       setDocumentsLoading(false);
     }
   }

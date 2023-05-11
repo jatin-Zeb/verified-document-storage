@@ -3,14 +3,12 @@ import { css } from "@emotion/react";
 
 export const landingContainer = css({
   height: "100%",
-  background: "white",
-  // backgroundImage: `linear-gradient(90deg, rgba(48,118,224,1) 0%, rgba(249,249,249,1) 1%, rgba(230,230,230,1) 99%, rgba(48,118,224,1) 100%)`,
+  background: "rgb(248,248,248)",
 });
 
 export const body = css({
-  height: "calc(100vh - 72px)",
   display: "flex",
-  padding: "20px 100px",
+  padding: `${utils.remConverter(20)} ${utils.remConverter(100)}`,
 });
 
 export const getStarted = css({
@@ -51,6 +49,8 @@ export const icon = css({
 
 export const feature = css({
   ...typography.H5_20_regular,
+  color: colors.Zeb_Solid_Dark,
+
   display: "contents",
   flexDirection: "row",
   margin: "0px 10px",
@@ -85,12 +85,27 @@ export const main = css({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  background: "#52B58812",
+  // background: "#52B58812",
   margin: "0px -100px",
-  padding: "40px 100px",
+  padding: `${utils.remConverter(0)} ${utils.remConverter(100)}`,
+  paddingBottom: "56px",
 });
 
-export const subContent = css({});
+export const subContent = css({
+  // background: "white",
+  margin: "0px -100px",
+  padding: `${utils.remConverter(50)} ${utils.remConverter(100)}`,
+
+  background: "#8bdbf22b",
+});
+
+export const subscribe = css({
+  textAlign: "center",
+  justifyContent: "space-between",
+  // background: "#52B58812",
+  margin: "0px -100px",
+  padding: `${utils.remConverter(30)} ${utils.remConverter(100)}`,
+});
 
 export const subContentHeading = css({
   ...typography.H2_44_bold,
@@ -105,4 +120,14 @@ export const featureHeading = css({
 export const featureSubHeading = css({
   ...typography.B3_16_semibold,
   color: colors.Zeb_Solid_Dark_Grey,
+});
+
+export const benefitHeading = css({
+  ...typography.H4_28_bold,
+  color: colors.Zeb_Solid_Dark,
+});
+
+export const ul = css({
+  color: colors.Zeb_Solid_Dark_Grey,
+  lineHeight: "25px",
 });

@@ -13,10 +13,6 @@ import { SideBarProps } from "./typings";
 import { Button, FloatButton } from "antd";
 import { useCallback } from "react";
 import { useRouter } from "next/router";
-import { StoreState } from "../../reducers";
-
-import { useSelector } from "react-redux";
-import { LoginData } from "../../typings/login";
 
 const SideBar: React.FC<SideBarProps> = ({
   expand,

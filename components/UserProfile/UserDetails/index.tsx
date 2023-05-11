@@ -9,8 +9,6 @@ import {
   Select,
   Typography,
 } from "antd";
-import { useCallback, useContext } from "react";
-
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
@@ -28,29 +26,14 @@ const UserDetails = () => {
   const { isLoggedIn } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
-  const [uplodedDocument, setUploadedDocument] = useState<
-    Blob | null | undefined
-  >();
+
   const { kycVerified, kycData } = useSelector<StoreState, KYCDocs>(
     (state) => state.kyc
   );
 
-  const onFinish = (values: any) => {
-    console.log(values);
-    console.log("Success:", values);
-  };
+  const onFinish = (values: any) => {};
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  const normFile = (e: any) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+  const onFinishFailed = (errorInfo: any) => {};
 
   return (
     <div css={styles.userDocuments}>

@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
-import "../styles/globals.css";
+import "../styles1/globals.css";
 import {ContractHandler} from "./../components/UserHome/Contract"
 import { getOrCreateStore } from "../utils/redux/createStore";
 import { Provider } from "react-redux";

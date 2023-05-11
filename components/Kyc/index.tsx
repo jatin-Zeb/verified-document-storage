@@ -12,7 +12,7 @@ import { StoreState } from "../../reducers";
 import { useSelector } from "react-redux";
 import { KYCDocs } from "../../reducers/kyc";
 import { UserState } from "../../reducers/userInfo";
-import { KycData, KycReqData } from "../../typings/kycDocs";
+import { KycReqData } from "../../typings/kycDocs";
 import { uploadKycDetails } from "../../actions/kyc";
 import { useRouter } from "next/router";
 
@@ -61,8 +61,6 @@ const KycHome: React.FC = () => {
   });
 
   const onFormSubmit = (values: any) => {
-    console.log(values);
-    console.log("Success:", values.firstName);
     setKycDetails({
       ...kycDetails,
       firstName: values.firstName,
@@ -94,9 +92,7 @@ const KycHome: React.FC = () => {
     });
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo: any) => {};
 
   const initialValues = {
     firstName: kycDetails.firstName,

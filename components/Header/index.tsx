@@ -3,7 +3,6 @@ import * as styles from "./styles";
 import Button from "../shared/Button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import metamask from "../../public/images/metamsk.png";
 import google from "../../public/images/google.png";
 import facebook from "../../public/images/facebook.png";
 import twitter from "../../public/images/twitter.png";
@@ -19,14 +18,21 @@ import { useSelector } from "react-redux";
 import { StoreState } from "../../reducers";
 import { UserState } from "../../reducers/userInfo";
 import { KYCDocs, KYC_STATUS } from "../../reducers/kyc";
-import { Tooltip, Modal } from "antd";
+import { Modal, Dropdown, MenuProps } from "antd";
 import {
   googleLogout,
   useGoogleLogin,
   TokenResponse,
 } from "@react-oauth/google";
 import axios from "axios";
-import { fetchKycData } from "../../actions/kyc";
+import { fetchKycData, setKycStatus } from "../../actions/kyc";
+import { utils } from "../../styles1";
+import {
+  BookFilled,
+  FileTextFilled,
+  RobotFilled,
+  SettingFilled,
+} from "@ant-design/icons";
 
 const Header = () => {
   const router = useRouter();
@@ -50,11 +56,17 @@ const Header = () => {
   useEffect(() => {
     if (userState.loginData) {
       setIsLoggedIn(true);
-      if (userState.loginData.kyc_status === KYC_STATUS.VERIFIED) {
-        fetchKycData(googleToken);
-      }
     }
   }, [googleToken, userState.loginData]);
+
+  useEffect(() => {
+    if (
+      userState.isLoggedIn &&
+      userState.loginData?.kyc_status === KYC_STATUS.VERIFIED
+    ) {
+      fetchKycData(googleToken);
+    }
+  }, [userState.isLoggedIn]);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse: TokenResponse) => {
@@ -68,6 +80,7 @@ const Header = () => {
     googleLogout();
     setGoogleLoginData(null);
     getLoginDetails("");
+    setKycStatus(0);
   };
 
   useEffect(() => {
@@ -88,7 +101,6 @@ const Header = () => {
           });
         })
         .catch((err) => {
-          console.log("error in api", err);
           sessionStorage.removeItem("google_token");
         });
     }
@@ -102,7 +114,6 @@ const Header = () => {
     } else sessionStorage.clear();
   };
   useEffect(() => {
-    console.log(userState);
     if (defaultAccount !== "") {
       setOpenModal(false);
     }
@@ -143,8 +154,97 @@ const Header = () => {
       window.ethereum.on("chainChanged", onChainChangedHandler);
   }
 
+  const items: MenuProps["items"] = [
+    {
+      key: "0",
+      label: (
+        <div
+          css={{
+            padding: "10px 5px 10px 0px",
+            borderBottom: "2px solid lightgrey",
+          }}
+        >
+          Name : {profile?.given_name || ""} {profile?.family_name || ""}
+        </div>
+      ),
+    },
+    {
+      key: "1",
+      label: (
+        <div
+          onClick={() => {
+            router.push("/profile");
+          }}
+        >
+          <RobotFilled css={styles.optionIcon} /> Profile
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <div
+          onClick={() => {
+            router.push("/docs");
+          }}
+        >
+          <FileTextFilled css={styles.optionIcon} />
+          Docs
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <div
+          onClick={() => {
+            // router.push("/settings");
+          }}
+        >
+          <SettingFilled css={styles.optionIcon} />
+          Settings
+        </div>
+      ),
+    },
+    {
+      key: "4",
+      label: (
+        <div
+          onClick={() => {
+            router.push("/aboutUs");
+          }}
+        >
+          <BookFilled css={styles.optionIcon} />
+          About Us
+        </div>
+      ),
+    },
+    {
+      key: "5",
+      label: (
+        <div
+          css={{
+            padding: "10px 5px 10px 0px",
+            borderTop: "2px solid lightgrey",
+          }}
+          onClick={() => {
+            setDefaultAccount("");
+            setIsLoggedIn(false);
+            setUserAddress("");
+            setSignOutVisible(false);
+            setGoogleLoginData(null);
+            sessionStorage.removeItem("google_token");
+            logOut();
+          }}
+        >
+          Sign Out
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div css={styles.header}>
+    <div css={styles.header(router.pathname === "/")}>
       <div css={styles.topBar}>
         <Image
           src={logo_doc}
@@ -155,26 +255,12 @@ const Header = () => {
           }}
           width={50}
         />
-        <div css={styles.webName(pathName)}>DocuSmriti</div>
+        <div css={styles.webName}>DocuSmriti</div>
+      </div>
 
+      <div css={styles.loginStatus}>
         {router.pathname === "/" ? (
           <>
-            <div
-              css={styles.subHeading()}
-              onClick={() => {
-                router.push("/aboutUs");
-              }}
-            >
-              About Us
-            </div>
-            <div
-              css={styles.subHeading(userState.isLoggedIn && kycVerified === 2)}
-              onClick={() => {
-                if (userState.isLoggedIn) router.push("/docs");
-              }}
-            >
-              Docs
-            </div>
             {userState.isLoggedIn && kycVerified === 0 && (
               <div
                 css={styles.subHeading()}
@@ -185,6 +271,22 @@ const Header = () => {
                 Kyc
               </div>
             )}
+            <div
+              css={styles.subHeading(userState.isLoggedIn && kycVerified === 2)}
+              onClick={() => {
+                if (userState.isLoggedIn) router.push("/docs");
+              }}
+            >
+              Docs
+            </div>
+            <div
+              css={styles.subHeading()}
+              onClick={() => {
+                router.push("/aboutUs");
+              }}
+            >
+              About
+            </div>
           </>
         ) : (
           <Button
@@ -192,37 +294,42 @@ const Header = () => {
             onClick={() => {
               router.push("/");
             }}
+            style={styles.subHeading()}
           >
             HOME
           </Button>
         )}
-      </div>
-
-      <div css={styles.loginStatus}>
-        <div css={{ position: "relative" }}>
-           {profile ? (
+        <div css={{ position: "relative", marginLeft: utils.remConverter(16) }}>
+          {profile ? (
             <div css={styles.address}>
-              <Image
-                src={profile.picture}
-                width={30}
-                height={30}
-                style={{ borderRadius: "50%" }}
-                alt=""
-                onClick={() => setSignOutVisible(!signoutVisible)}
-              />
-              <Tooltip placement="bottomRight" title={defaultAccount}>
-                &nbsp;
-                <span onClick={() => setSignOutVisible(!signoutVisible)}>
-                  {profile.given_name} {profile.family_name}
-                </span>
-                <div css={styles.walletAddress}>
-                  {defaultAccount !== ""?defaultAccount.slice(0, 5) +
-                    "....." +
-                    defaultAccount.slice(defaultAccount.length - 5):null}
-                </div>
-              </Tooltip>
-
-              {signoutVisible && (
+              <Dropdown
+                open={signoutVisible}
+                menu={{ items }}
+                placement="bottomLeft"
+              >
+                <Image
+                  src={profile.picture}
+                  width={30}
+                  height={30}
+                  style={{ borderRadius: "50%" }}
+                  alt=""
+                  onClick={() => setSignOutVisible(!signoutVisible)}
+                />
+                {/* <Tooltip placement="bottomRight" title={defaultAccount}>
+                  &nbsp;
+                  <span onClick={() => setSignOutVisible(!signoutVisible)}>
+                    {profile.given_name} {profile.family_name}
+                  </span>
+                  <div css={styles.walletAddress}>
+                    {defaultAccount !== ""
+                      ? defaultAccount.slice(0, 5) +
+                        "....." +
+                        defaultAccount.slice(defaultAccount.length - 5)
+                      : null}
+                  </div>
+                </Tooltip> */}
+              </Dropdown>
+              {/* {signoutVisible && (
                 <span css={styles.signoutContainer}>
                   <div
                     css={styles.selectOverlay}
@@ -243,7 +350,7 @@ const Header = () => {
                     Sign Out
                   </div>
                 </span>
-              )}
+              )} */}
             </div>
           ) : (
             <Button
@@ -269,11 +376,23 @@ const Header = () => {
             <div css={styles.loginTitle}>Google</div>
           </div>
           <div onClick={() => {}} css={styles.loginOptionContainer}>
-            <Image css={styles.loginImg} src={facebook} alt="" width={20} height={20} />
+            <Image
+              css={styles.loginImg}
+              src={facebook}
+              alt=""
+              width={20}
+              height={20}
+            />
             <div css={styles.loginTitle}>Facebook</div>
           </div>
           <div onClick={() => {}} css={styles.loginOptionContainer}>
-            <Image css={styles.loginImg} src={twitter} alt="" width={20} height={20} />
+            <Image
+              css={styles.loginImg}
+              src={twitter}
+              alt=""
+              width={20}
+              height={20}
+            />
             <div css={styles.loginTitle}>Twitter</div>
           </div>
         </div>

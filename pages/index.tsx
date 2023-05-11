@@ -17,10 +17,15 @@ import { KYCDocs } from "../reducers/kyc";
 import { useSelector } from "react-redux";
 import { UserState } from "../reducers/userInfo";
 import NewsLetter from "../components/NewsLetter";
+import { css } from "@emotion/react";
+import { colors } from "../styles1";
+import contactUs from "../public/images/contactUs.png";
+
 
 // @ts-nocheck
 const Home: NextPage = () => {
   const history = useRouter();
+  const router = useRouter();
   const { isLoggedIn } = useSelector<StoreState, UserState>(
     (state) => state.user
   );
@@ -29,6 +34,7 @@ const Home: NextPage = () => {
     (state) => state.kyc
   );
   return (
+    <>
     <div css={styles.landingContainer}>
       <Header />
       <div css={styles.body}>
@@ -173,7 +179,22 @@ const Home: NextPage = () => {
           <NewsLetter />
         </div>
       </div>
-    </div>
+      </div>
+      <div
+        onClick={()=>router.push("/contact")}
+        css={css({
+          position: "sticky",
+          bottom: "40px",
+          left: "95%",
+          width: "50px",
+          backgroundColor: colors.Zeb_Solid_Bright_Blue,
+          padding: "10px",
+          borderRadius: "50%",
+          cursor: "pointer"
+        })}>
+        <Image width={30} height={30} src={contactUs} alt="" />
+        </div>
+    </>
   );
 };
 

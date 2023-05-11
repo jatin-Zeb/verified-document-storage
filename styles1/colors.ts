@@ -11,7 +11,7 @@ const colors = {
   Zeb_Solid_Yellow: "#F9C35C",
   Zeb_Solid_Grey: "#C2C2DD",
   Zeb_Solid_Dark_Grey: "#34345A",
-  Zeb_Solid_Black: "000000",
+  Zeb_Solid_Black: "#000000",
   Zeb_Solid_Light_Blue_01: "#E9EFF6",
   Zeb_Solid_Grey_01: "#E1E3E6",
   Zeb_Solid_Grey_02: "#6B6B6B",

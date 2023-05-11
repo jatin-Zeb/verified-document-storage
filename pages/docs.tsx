@@ -16,11 +16,11 @@ const Home: NextPage = () => {
 
     })
   return (
-    <div style={{height:"100vh", background:"#F5F5F5"}}>
+    <div style={{ background:"#F5F5F5"}}>
+        <Header />
         <div css={{display:"flex"}}>
         <SideBar expand={openSideDrawer} toggleExpand={()=>{setOpenSideDrawer(prev=>!prev)}} selected="docs"/>
-        <div css={{width:openSideDrawer? "90%":"95%",justifyContent:"end", transition:"0.2s all ease-in",marginLeft:"auto"}}>
-            <Header />
+        <div css={{width:openSideDrawer? "90%":"95%",justifyContent:"end", transition:"0.2s all ease-in",marginLeft:"auto"}}>        
             <div css={{ display: "flex",   padding: "10px 40px",   justifyContent: "space-between"}}>
               <UserDocuments/>
             </div>

@@ -3,7 +3,8 @@ import { useState, createContext } from "react";
 import { ethers } from "ethers";
 import { ContractContextType } from "./context";
 import { setIsLoggedIn } from "../../../actions/user";
-import { setUserDocs } from "../../../actions/docs";
+import { fetchKycData } from "../../../actions/kyc";
+import { setDocumentsLoading, setUserDocs } from "../../../actions/docs";
 import { useSelector } from "react-redux";
 import { StoreState } from "../../../reducers";
 import { UserState } from "../../../reducers/userInfo";
@@ -182,8 +183,9 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       }
 
       setUserDocs({ all: allSigned, signed, pending });
+      setDocumentsLoading(false);
     } else {
-      throw new Error("wallet not connnected");
+      setDocumentsLoading(false);
     }
   }
 

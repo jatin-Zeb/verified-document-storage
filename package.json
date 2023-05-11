@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
+    "@emailjs/browser": "^3.11.0",
     "@emotion/babel-plugin": "^11.10.5",
     "@emotion/react": "^11.10.5",
     "@react-oauth/google": "^0.10.0",

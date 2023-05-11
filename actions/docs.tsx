@@ -32,3 +32,30 @@ export const addNewContract = async (doc: NewDoc, token: string) => {
     return e;
   }
 }
+
+export const acceptContract = async (sha256: string, token: string) => {
+  try {
+    const response = await axios(BASE_URL + "/acceptContract", {
+      headers: {
+        "Authorization": "Bearer " + token
+      },
+      method: "POST",
+      data: { sha256: sha256 }
+    });
+    return response.data.data;
+  } catch (e) {
+    return e;
+  }
+}
+
+export const setDocumentsLoading = (state: boolean) => {
+  actionCreator(
+    "setDocumentsLoading",
+    async (dispatch: Dispatch): Promise<void> => {
+      dispatch({
+        type: ActionType.SET_DOCUMENTS_LOADING,
+        payload: state,
+      });
+    }
+  );
+} 

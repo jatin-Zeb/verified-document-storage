@@ -4,6 +4,8 @@ import Button from "../shared/Button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import google from "../../public/images/google.png";
+import facebook from "../../public/images/facebook.png";
+import twitter from "../../public/images/twitter.png";
 import logo_doc from "../../public/images/logo_doc1.png";
 import Image from "next/image";
 import {
@@ -270,6 +272,14 @@ const Header = () => {
           <div onClick={() => login()} css={styles.loginOptionContainer}>
             <Image css={styles.loginImg} src={google} alt="" width={20} />
             <div css={styles.loginTitle}>Google</div>
+          </div>
+          <div onClick={() => {}} css={styles.loginOptionContainer}>
+            <Image css={styles.loginImg} src={facebook} alt="" width={20} height={20} />
+            <div css={styles.loginTitle}>Facebook</div>
+          </div>
+          <div onClick={() => {}} css={styles.loginOptionContainer}>
+            <Image css={styles.loginImg} src={twitter} alt="" width={20} height={20} />
+            <div css={styles.loginTitle}>Twitter</div>
           </div>
         </div>
       </Modal>

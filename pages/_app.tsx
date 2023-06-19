@@ -12,7 +12,7 @@ const activeChainId = ChainId.Mainnet;
 function MyApp({ Component, pageProps }: AppProps) {
     const store = getOrCreateStore();
   return (
-    <GoogleOAuthProvider clientId="1083090533190-qngp1llqj9elmn19mf47llu37i5sroug.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="527459920507-7gqnqi9mfcebn2vog45sk33h7ott9iac.apps.googleusercontent.com">
       <Provider store={store}>
         <ContractHandler>
           <ThirdwebProvider desiredChainId={activeChainId}>

@@ -281,7 +281,7 @@ const UserDocuments = () => {
       subject: "Signature Needed in Contract",
     };
     const response = await fetch(
-      "https://frightened-hen-waders.cyclic.app/mail/send",
+      "https://rose-ill-clownfish.cyclic.app/mail/send",
       {
         method: "POST",
         body: JSON.stringify(content),

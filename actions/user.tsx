@@ -4,7 +4,7 @@ import { ActionType } from "../reducers/userInfo";
 import { GoogleLoginData } from "../typings/login";
 import axios from "axios";
 
-const BASE_URL = "https://frightened-hen-waders.cyclic.app";
+const BASE_URL = "https://rose-ill-clownfish.cyclic.app";
 
 export const setUserAddress = (address: string) => {
   actionCreator(

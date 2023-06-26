@@ -4,7 +4,7 @@ import { ActionType, UploadedDocsProps } from "../reducers/docs";
 import { NewDoc } from "../typings/docs";
 import axios from "axios";
 
-const BASE_URL = "https://frightened-hen-waders.cyclic.app";
+const BASE_URL = "https://rose-ill-clownfish.cyclic.app";
 
 export const setUserDocs = (docs: UploadedDocsProps) => {
   actionCreator(

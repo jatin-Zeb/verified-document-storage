@@ -1,10 +1,10 @@
 .container {
   padding: 0 2rem;
   background-image: url("../public/images/background-image.png");
+  background-repeat: no-repeat;
 }
 
 .main {
-  min-height: 100vh;
   padding: 4rem 0;
   flex: 1;
   display: flex;

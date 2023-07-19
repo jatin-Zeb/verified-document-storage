@@ -252,7 +252,7 @@ const UserDocuments = () => {
             values.Email || "", // ADD GOOGLE EMAIL HERE @TODO
             values.DateRange[0]["$d"].toLocaleString() || "",
             values.DateRange[1]["$d"].toLocaleString() || "",
-            currentTime.toLocaleString(),
+            currentTime.toLocaleDateString('en-GB'),
             sha256,
             metadata.url,
             emailArray

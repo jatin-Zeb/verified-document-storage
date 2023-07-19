@@ -86,6 +86,8 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       return;
     }
     const contract = await checkAndConnectContractWithSigner();
+    const contractCreatePrice = await getContractCreatePrice();
+    console.log("Contract Create Price is", contractCreatePrice)
     await contract.addContract(
       category,
       description,
@@ -97,9 +99,14 @@ export const ContractHandler: React.FC<Props> = ({ children }) => {
       sha256,
       IPFSUri,
       InvitesEmail
-    );
+    ,{value: contractCreatePrice});
   }
 
+  async function getContractCreatePrice(){
+    const contract = await checkAndConnectContract();
+    const result = await contract.getContractCreatePrice();
+    return result;
+  }
   async function addUserKycInfo(
     firstName: string,
     lastName: string,

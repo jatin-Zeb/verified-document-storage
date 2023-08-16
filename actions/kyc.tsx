@@ -4,7 +4,7 @@ import { ActionType, KYC_VERIFICATION_STATUS } from "../reducers/kyc";
 import { KycData, KYCDocument, KycReqData } from "../typings/kycDocs";
 import axios from "axios";
 
-const BASE_URL = "https://rose-ill-clownfish.cyclic.app";
+const BASE_URL = "https://rose-ill-clownfish.cyclic.app/v1";
 
 export const setKycStatus = (status: KYC_VERIFICATION_STATUS) => {
   actionCreator(
